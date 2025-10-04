@@ -44,6 +44,27 @@ services:
     # Restart policy
     restart: unless-stopped
 
+  app:
+    # Service name shown in the Railway dashboard
+    name: cookhub-api
+    
+    # Use the official Python runtime
+    runtime: python
+    
+    # Build command to install dependencies
+    buildCommand: pip install -r requirements.txt
+    
+    # Start command for the application
+    startCommand: python app.py
+    
+    # Health check endpoint
+    healthcheckPath: /
+    
+    # Environment variables
+    env:
+      FLASK_ENV: production
+      PYTHONUNBUFFERED: true
+      
 # Define service dependencies
 dependencies:
   api:
