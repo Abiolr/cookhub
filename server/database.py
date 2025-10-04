@@ -2,7 +2,6 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import uuid
 import json
 from pathlib import Path
 
@@ -127,6 +126,117 @@ class Database:
         self.create_users_table()
         self.create_recipes_table()
         print("All database tables created successfully!")
+
+    def user_exists(self, username=None, email=None):
+        """Check if a user already exists with the given username or email.
+        
+        Args:
+            username (str): Username to check.
+            email (str): Email to check.
+            
+        Returns:
+            bool: True if user exists, False otherwise.
+        """
+        if not username and not email:
+            return False
+            
+        connection = self.get_db_connection()
+        cursor = connection.cursor()
+        
+        try:
+            if username and email:
+                query = "SELECT id FROM Users WHERE username = %s OR email = %s"
+                cursor.execute(query, (username, email))
+            elif username:
+                query = "SELECT id FROM Users WHERE username = %s"
+                cursor.execute(query, (username,))
+            else:
+                query = "SELECT id FROM Users WHERE email = %s"
+                cursor.execute(query, (email,))
+                
+            result = cursor.fetchone()
+            return result is not None
+            
+        except mysql.connector.Error as e:
+            print(f"Error checking if user exists: {e}")
+            return True
+        finally:
+            cursor.close()
+            connection.close()
+
+    def add_user(self, username, email, password):
+        """Add a new user to the database.
+        
+        Args:
+            username (str): User's username.
+            email (str): User's email.
+            password (str): User's password.
+            
+        Returns:
+            tuple: (success: bool, message: str, user_id: int)
+        """
+        # Check if user already exists
+        if self.user_exists(username=username, email=email):
+            return False, "Username or email already exists", None
+            
+        connection = self.get_db_connection()
+        cursor = connection.cursor()
+        
+        try:
+            query = """
+            INSERT INTO Users (username, email, password) 
+            VALUES (%s, %s, %s)
+            """
+            
+            cursor.execute(query, (username, email, password))
+            connection.commit()
+            
+            user_id = cursor.lastrowid
+            
+            return True, "User registered successfully", user_id
+            
+        except mysql.connector.Error as e:
+            connection.rollback()
+            print(f"Error adding user to database: {e}")
+            return False, f"Database error: {e}", None
+        finally:
+            cursor.close()
+            connection.close()
+
+    def login_user(self, username, password):
+        """Authenticate a user with username and password.
+        
+        Args:
+            username (str): User's username.
+            password (str): User's password.
+            
+        Returns:
+            tuple: (success: bool, message: str, user_data: dict)
+        """
+        connection = self.get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        try:
+            query = """
+            SELECT id, username, email, created_at 
+            FROM Users 
+            WHERE username = %s AND password = %s
+            """
+            
+            cursor.execute(query, (username, password))
+            user = cursor.fetchone()
+            
+            if user:
+                return True, "Login successful", user
+            else:
+                return False, "Invalid username or password", None
+                
+        except mysql.connector.Error as e:
+            print(f"Error during login: {e}")
+            return False, f"Database error: {e}", None
+        finally:
+            cursor.close()
+            connection.close()
 
 if __name__ == "__main__":
     db = Database()
