@@ -1,0 +1,60 @@
+# railway.yaml
+version: 1
+
+services:
+  api:
+    # Service name shown in the Railway dashboard
+    name: cookhub-api
+    
+    # Use the official Python runtime
+    runtime: python
+    
+    # Build command to install dependencies
+    buildCommand: pip install -r requirements.txt
+    
+    # Start command for the application
+    startCommand: python app.py
+    
+    # Health check endpoint
+    healthcheckPath: /
+    
+    # Environment variables (some will be set in Railway dashboard)
+    env:
+      # These should be set in your Railway project variables
+      # RLWY_HOST: ${MYSQLHOST}
+      # RLWY_USER: ${MYSQLUSER}
+      # RLWY_PASS: ${MYSQLPASSWORD}
+      # RLWY_DB: ${MYSQLDATABASE}
+      # RLWY_PORT: ${MYSQLPORT}
+      FLASK_ENV: production
+      PYTHONUNBUFFERED: true
+
+  # Database service (MySQL)
+  mysql:
+    # Use MySQL plugin
+    image: mysql:8.0
+    
+    # Database configuration
+    env:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: cookhub
+      MYSQL_USER: ${MYSQLUSER}
+      MYSQL_PASSWORD: ${MYSQLPASSWORD}
+    
+    # Restart policy
+    restart: unless-stopped
+
+# Define service dependencies
+dependencies:
+  api:
+    - mysql
+
+# Deployment configuration
+deploy:
+  # Number of replicas
+  replicas: 1
+  
+  # Resource limits
+  resources:
+    memory: 512MB
+    cpu: 0.5
