@@ -3,6 +3,7 @@ from flask_cors import CORS
 import mysql.connector
 from dotenv import load_dotenv
 from database import Database
+import os
 
 app = Flask(__name__)
 CORS(app)
