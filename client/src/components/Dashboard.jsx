@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 const API_BASE_URL = 'https://cookhub-production.up.railway.app';
@@ -7,10 +8,10 @@ function Dashboard({ currentUser, onViewRecipe }) {
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('Dashboard mounted, currentUser:', currentUser);
-    console.log('Dashboard onViewRecipe prop:', onViewRecipe);
     
     if (currentUser && currentUser.userId) {
       console.log('Fetching recipes for user:', currentUser.userId);
@@ -56,7 +57,8 @@ function Dashboard({ currentUser, onViewRecipe }) {
   };
 
   const handleCreateRecipe = () => {
-    alert('Create Recipe feature - Coming soon!');
+    // Navigate to search page to create/find recipes
+    navigate('/search');
   };
 
   const handleAIAssistant = () => {
@@ -66,11 +68,12 @@ function Dashboard({ currentUser, onViewRecipe }) {
   const handleViewRecipe = (recipe) => {
     console.log('=== VIEW RECIPE CLICKED ===');
     console.log('Recipe data:', recipe);
-    console.log('onViewRecipe function:', onViewRecipe);
     
     if (onViewRecipe && typeof onViewRecipe === 'function') {
       console.log('Calling onViewRecipe...');
       onViewRecipe(recipe);
+      // Navigate to recipe view
+      navigate(`/recipe/${recipe.recipe_id}`);
     } else {
       console.error('onViewRecipe is not a function or is undefined');
     }
@@ -102,10 +105,10 @@ function Dashboard({ currentUser, onViewRecipe }) {
       <section className="quick-actions">
         <div className="action-card create-recipe-card">
           <div className="action-content">
-            <h3>Create New Recipe</h3>
-            <p>Share your culinary creations with the community</p>
+            <h3>Find & Create Recipes</h3>
+            <p>Search for recipes by ingredients or create your own culinary creations</p>
             <button onClick={handleCreateRecipe} className="action-button">
-              Create Recipe
+              Find Recipes
             </button>
           </div>
           <div className="action-icon">👨‍🍳</div>
@@ -150,7 +153,6 @@ function Dashboard({ currentUser, onViewRecipe }) {
         ) : (
           <div className="recipes-grid">
             {savedRecipes.map((recipe, index) => {
-              // Use the data structure returned by the backend
               const ingredientCount = Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0;
               const stepCount = Array.isArray(recipe.instructions) ? recipe.instructions.length : 0;
 

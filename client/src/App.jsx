@@ -1,20 +1,16 @@
-import { useState } from 'react'
-import Header from './components/Header.jsx'
-import Homepage from './components/Homepage.jsx'
-import Search from './components/Search.jsx'
-import Registration from './components/Registration.jsx'  
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Homepage from "./components/Homepage.jsx";
 import Login from "./components/Login.jsx";
 import Registration from "./components/Registration.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import View from "./components/View.jsx";
+import Search from "./components/Search.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [currentView, setCurrentView] = useState('home');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   // Debug: Log state changes
@@ -23,18 +19,15 @@ function App() {
       "App State - isLoggedIn:",
       isLoggedIn,
       "currentUser:",
-      currentUser,
-      "currentView:",
-      currentView
+      currentUser
     );
-  }, [isLoggedIn, currentUser, currentView]);
+  }, [isLoggedIn, currentUser]);
 
   // Handle successful login/registration
   const handleAuthSuccess = (userData) => {
     console.log('Authentication successful, user data:', userData);
     setCurrentUser(userData);
     setIsLoggedIn(true);
-    setCurrentView('dashboard');
   };
 
   // Handle logout properly
@@ -42,7 +35,6 @@ function App() {
     console.log("Logging out...");
     setCurrentUser(null);
     setIsLoggedIn(false);
-    setCurrentView('home');
     setSelectedRecipe(null);
   };
 
@@ -50,109 +42,80 @@ function App() {
   const handleViewRecipe = (recipe) => {
     console.log('Viewing recipe in App:', recipe);
     setSelectedRecipe(recipe);
-    setCurrentView('view');
-  };
-
-  // Handle going back to dashboard from view
-  const handleBackToDashboard = () => {
-    console.log('Going back to dashboard');
-    setCurrentView('dashboard');
-    setSelectedRecipe(null);
-  };
-
-  // Navigation functions
-  const navigateToHome = () => {
-    console.log('Navigating to home');
-    setCurrentView('home');
-  };
-  
-  const navigateToLogin = () => {
-    console.log('Navigating to login');
-    setCurrentView('login');
-  };
-  
-  const navigateToRegister = () => {
-    console.log('Navigating to register');
-    setCurrentView('register');
-  };
-  
-  const navigateToDashboard = () => {
-    console.log('Navigating to dashboard');
-    if (isLoggedIn) {
-      setCurrentView('dashboard');
-    } else {
-      setCurrentView('login');
-    }
-  };
-
-  // Render current view
-  const renderCurrentView = () => {
-    console.log('Rendering view:', currentView);
-    
-    switch (currentView) {
-      case 'home':
-        return <Homepage />;
-      case 'login':
-        return (
-          <Login 
-            setIsLoggedIn={setIsLoggedIn} 
-            setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={navigateToRegister}
-          />
-        );
-      case 'register':
-        return (
-          <Registration 
-            onRegistrationSuccess={handleAuthSuccess}
-            onNavigateToLogin={navigateToLogin}
-          />
-        );
-      case 'dashboard':
-        return isLoggedIn && currentUser ? (
-          <Dashboard 
-            currentUser={currentUser} 
-            onViewRecipe={handleViewRecipe}
-          />
-        ) : (
-          <Login 
-            setIsLoggedIn={setIsLoggedIn} 
-            setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={navigateToRegister}
-          />
-        );
-      case 'view':
-        return isLoggedIn && currentUser ? (
-          <View 
-            recipe={selectedRecipe}
-            onBack={handleBackToDashboard}
-            currentUser={currentUser}
-          />
-        ) : (
-          <Login 
-            setIsLoggedIn={setIsLoggedIn} 
-            setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={navigateToRegister}
-          />
-        );
-      default:
-        return <Homepage />;
-    }
   };
 
   return (
-    <>
-    <Search/>
-      <Header 
-        isLoggedIn={isLoggedIn}
-        currentView={currentView}
-        onLogout={handleLogout}
-        onNavigateToHome={navigateToHome}
-        onNavigateToLogin={navigateToLogin}
-        onNavigateToRegister={navigateToRegister}
-        onNavigateToDashboard={navigateToDashboard}
-      />
-      {renderCurrentView()}
-    </>
+    <Router>
+      <div className="app">
+        <Header 
+          isLoggedIn={isLoggedIn}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
+        
+        <main className="main-content">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/search" element={<Search />} />
+            <Route 
+              path="/login" 
+              element={
+                !isLoggedIn ? (
+                  <Login 
+                    setIsLoggedIn={setIsLoggedIn} 
+                    setCurrentUser={handleAuthSuccess}
+                  />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              } 
+            />
+            <Route 
+              path="/register" 
+              element={
+                !isLoggedIn ? (
+                  <Registration onRegistrationSuccess={handleAuthSuccess} />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              } 
+            />
+            
+            {/* Protected routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                isLoggedIn && currentUser ? (
+                  <Dashboard 
+                    currentUser={currentUser} 
+                    onViewRecipe={handleViewRecipe}
+                  />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              } 
+            />
+            <Route 
+              path="/recipe/:recipeId" 
+              element={
+                isLoggedIn && currentUser && selectedRecipe ? (
+                  <View 
+                    recipe={selectedRecipe}
+                    currentUser={currentUser}
+                  />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              } 
+            />
+            
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 

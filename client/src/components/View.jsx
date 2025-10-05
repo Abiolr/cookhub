@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/View.css";
 
-const View = ({ recipe, onBack, currentUser }) => {
+const View = ({ recipe, currentUser }) => {
   const [checkedIngredients, setCheckedIngredients] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('View component mounted with recipe:', recipe);
-    console.log('View component onBack function:', onBack);
     console.log('View component currentUser:', currentUser);
-  }, [recipe, onBack, currentUser]);
+  }, [recipe, currentUser]);
 
   if (!recipe) {
     console.log('No recipe provided to View component');
@@ -17,7 +18,7 @@ const View = ({ recipe, onBack, currentUser }) => {
         <div className="error-container">
           <h2>No recipe selected</h2>
           <p>Please go back and select a recipe to view.</p>
-          <button onClick={onBack} className="back-button">
+          <button onClick={() => navigate('/dashboard')} className="back-button">
             Back to Dashboard
           </button>
         </div>
@@ -25,15 +26,9 @@ const View = ({ recipe, onBack, currentUser }) => {
     );
   }
 
-  // Get ingredients and instructions from the recipe
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
   const instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
 
-  console.log('Rendering recipe:', recipe.title);
-  console.log('Ingredients count:', ingredients.length);
-  console.log('Instructions count:', instructions.length);
-
-  // Handle ingredient checkbox changes
   const handleIngredientCheck = (index) => {
     setCheckedIngredients(prev => ({
       ...prev,
@@ -42,26 +37,18 @@ const View = ({ recipe, onBack, currentUser }) => {
   };
 
   const handleBackClick = () => {
-    console.log('Back button clicked');
-    if (onBack && typeof onBack === 'function') {
-      onBack();
-    } else {
-      console.error('onBack is not a function');
-    }
+    navigate('/dashboard');
   };
 
   return (
     <div className="recipe-view-page">
-      {/* Recipe View Content */}
       <main className="recipe-view-container">
-        {/* Back Navigation */}
         <div className="back-nav">
           <button onClick={handleBackClick} className="back-link">
             ← Back to My Recipes
           </button>
         </div>
 
-        {/* Recipe Header */}
         <section className="recipe-header">
           <div className="recipe-hero">
             <img
@@ -85,17 +72,14 @@ const View = ({ recipe, onBack, currentUser }) => {
           </div>
         </section>
 
-        {/* Recipe Content */}
         <section className="recipe-content">
           <div className="recipe-grid">
-            {/* Ingredients Column */}
             <div className="ingredients-column">
               <div className="ingredients-card">
                 <h2 className="section-title">Ingredients</h2>
                 <div className="serving-size">
                   <p>Serving size: 2-4 people</p>
                 </div>
-
                 <ul className="ingredients-list">
                   {ingredients.map((ingredient, index) => (
                     <li key={index} className="ingredient-item">
@@ -117,7 +101,6 @@ const View = ({ recipe, onBack, currentUser }) => {
               </div>
             </div>
 
-            {/* Instructions Column */}
             <div className="instructions-column">
               <div className="instructions-card">
                 <h2 className="section-title">Instructions</h2>
@@ -143,7 +126,6 @@ const View = ({ recipe, onBack, currentUser }) => {
           </div>
         </section>
 
-        {/* Recipe Actions */}
         <section className="recipe-actions">
           <div className="action-buttons">
             <button className="action-button print-button">
