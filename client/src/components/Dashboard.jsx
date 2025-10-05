@@ -1,176 +1,198 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Recipes - CookHub</title>
-  <link rel="stylesheet" href="src/styles/Search.css">
-</head>
-<body>
-  <!-- Post-login header -->
-  <div class="post-login-header">
-    <div class="logo-name">
-      <img src="src/assets/CookHub_Logo.png" alt="CookHub Logo" class="logo-image">
-      <span>CookHub</span>
-    </div>
+import { useState, useEffect } from 'react';
+import '../styles/Dashboard.css';
+
+const API_BASE_URL = 'https://cookhub-production.up.railway.app';
+
+function Dashboard({ currentUser }) {
+  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    console.log('Dashboard mounted, currentUser:', currentUser);
+    if (currentUser && currentUser.userId) {
+      console.log('Fetching recipes for user:', currentUser.userId);
+      fetchUserRecipes();
+    } else {
+      console.log('No current user, skipping fetch');
+      setIsLoading(false);
+    }
+  }, [currentUser]);
+
+  const fetchUserRecipes = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/user/${currentUser.userId}/recipes`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSavedRecipes(data.recipes || []);
+      } else {
+        setError(data.message || 'Failed to load recipes');
+      }
+    } catch (err) {
+      console.error('Error fetching recipes:', err);
+      setError('Network error. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateRecipe = () => {
+    alert('Create Recipe feature - Coming soon!');
+  };
+
+  const handleAIAssistant = () => {
+    alert('AI Recipe Assistant - Coming soon!');
+  };
+
+  const handleViewRecipe = (recipe) => {
+    // Parse the ingredients and instructions
+    let ingredients = [];
+    let instructions = [];
     
-    <nav class="main-nav">
-      <a href="search.html" class="nav-link">Search</a>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="account.html" class="account-link">Account</a>
-    </nav>
-    
-    <div class="user-actions">
-      <a href="logout.html" class="logout-btn">Logout</a>
-    </div>
-  </div>
+    try {
+      ingredients = recipe.ingredients ? JSON.parse(recipe.ingredients) : [];
+      instructions = recipe.instructions ? JSON.parse(recipe.instructions) : [];
+    } catch (e) {
+      console.error('Error parsing recipe data:', e);
+    }
 
-  <!-- Main Content -->
-  <main class="recipes-dashboard">
-    <!-- Welcome Section -->
-    <section class="welcome-section">
-      <div class="welcome-container">
-        <h1 class="welcome-title">Welcome, <span id="userName">User</span>!</h1>
-        <p class="welcome-subtitle">Ready to cook something amazing today?</p>
-      </div>
-    </section>
+    const recipeDetails = `
+Recipe: ${recipe.title}
 
-    <!-- Quick Actions -->
-    <section class="quick-actions">
-      <div class="action-card create-recipe-card">
-        <div class="action-content">
-          <h3>Create New Recipe</h3>
-          <p>Share your culinary creations with the community</p>
-          <a href="create-recipe.html" class="action-button">Create Recipe</a>
+Ingredients:
+${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
+
+Instructions:
+${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
+    `.trim();
+
+    alert(recipeDetails);
+  };
+
+  if (!currentUser) {
+    return (
+      <main className="recipes-dashboard">
+        <div className="error-container">
+          <h2>Please log in to view your dashboard</h2>
         </div>
-        <div class="action-icon">👨‍🍳</div>
-      </div>
+      </main>
+    );
+  }
 
-      <div class="action-card ai-feature-card">
-        <div class="action-content">
-          <h3>AI Recipe Assistant</h3>
-          <p>Get personalized recipe suggestions based on your ingredients</p>
-          <a href="ai-assistant.html" class="action-button">Try AI Feature</a>
+  return (
+    <main className="recipes-dashboard">
+      {/* Welcome Section */}
+      <section className="welcome-section">
+        <div className="welcome-container">
+          <h1 className="welcome-title">
+            Welcome, <span className="user-name">{currentUser.username}</span>!
+          </h1>
+          <p className="welcome-subtitle">Ready to cook something amazing today?</p>
         </div>
-        <div class="action-icon">🤖</div>
-      </div>
-    </section>
+      </section>
 
-    <!-- My Recipes Section -->
-    <section class="recipes-section">
-      <div class="section-header">
-        <h2>My Recipes</h2>
-        <a href="my-recipes.html" class="view-all-link">View All</a>
-      </div>
-      
-      <div class="recipes-grid">
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/1a3c34/ffffff?text=R1" alt="Recipe 1">
+      {/* Quick Actions */}
+      <section className="quick-actions">
+        <div className="action-card create-recipe-card">
+          <div className="action-content">
+            <h3>Create New Recipe</h3>
+            <p>Share your culinary creations with the community</p>
+            <button onClick={handleCreateRecipe} className="action-button">
+              Create Recipe
+            </button>
           </div>
-          <div class="recipe-info">
-            <h3>Spaghetti Carbonara</h3>
-            <p class="recipe-meta">Italian • 30 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn edit-btn">Edit</button>
-            </div>
-          </div>
+          <div className="action-icon">👨‍🍳</div>
         </div>
 
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/2d5c4f/ffffff?text=R2" alt="Recipe 2">
+        <div className="action-card ai-feature-card">
+          <div className="action-content">
+            <h3>AI Recipe Assistant</h3>
+            <p>Get personalized recipe suggestions based on your ingredients</p>
+            <button onClick={handleAIAssistant} className="action-button">
+              Try AI Feature
+            </button>
           </div>
-          <div class="recipe-info">
-            <h3>Vegetable Stir Fry</h3>
-            <p class="recipe-meta">Asian • 20 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn edit-btn">Edit</button>
-            </div>
-          </div>
+          <div className="action-icon">🤖</div>
+        </div>
+      </section>
+
+      {/* Saved Recipes Section */}
+      <section className="recipes-section saved-recipes">
+        <div className="section-header">
+          <h2>My Saved Recipes</h2>
         </div>
 
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/1a3c34/ffffff?text=R3" alt="Recipe 3">
+        {error && (
+          <div className="error-message">
+            {error}
           </div>
-          <div class="recipe-info">
-            <h3>Chocolate Cake</h3>
-            <p class="recipe-meta">Dessert • 60 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn edit-btn">Edit</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        )}
 
-    <!-- Saved Recipes Section -->
-    <section class="recipes-section saved-recipes">
-      <div class="section-header">
-        <h2>Saved Recipes</h2>
-        <a href="saved-recipes.html" class="view-all-link">View All</a>
-      </div>
-      
-      <div class="recipes-grid">
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/2d5c4f/ffffff?text=SR1" alt="Saved Recipe 1">
+        {isLoading ? (
+          <div className="loading-message">
+            <p>Loading your recipes...</p>
           </div>
-          <div class="recipe-info">
-            <h3>Greek Salad</h3>
-            <p class="recipe-meta">Mediterranean • 15 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn save-btn">Unsave</button>
-            </div>
+        ) : savedRecipes.length === 0 ? (
+          <div className="no-recipes-message">
+            <p>You haven't saved any recipes yet.</p>
+            <p>Start by searching for recipes or creating your own!</p>
           </div>
-        </div>
+        ) : (
+          <div className="recipes-grid">
+            {savedRecipes.map((recipe) => {
+              let ingredientCount = 0;
+              let stepCount = 0;
+              
+              try {
+                ingredientCount = recipe.ingredients ? JSON.parse(recipe.ingredients).length : 0;
+                stepCount = recipe.instructions ? JSON.parse(recipe.instructions).length : 0;
+              } catch (e) {
+                console.error('Error parsing recipe counts:', e);
+              }
 
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/1a3c34/ffffff?text=SR2" alt="Saved Recipe 2">
+              return (
+                <div key={recipe.saved_recipe_id} className="recipe-card">
+                  <div className="recipe-image">
+                    <img 
+                      src={recipe.image_url || 'https://via.placeholder.com/200x150/1a3c34/ffffff?text=Recipe'} 
+                      alt={recipe.title}
+                    />
+                  </div>
+                  <div className="recipe-info">
+                    <h3>{recipe.title}</h3>
+                    <p className="recipe-meta">
+                      {ingredientCount} ingredients • {stepCount} steps
+                    </p>
+                    <div className="recipe-actions">
+                      <button 
+                        className="recipe-btn view-btn"
+                        onClick={() => handleViewRecipe(recipe)}
+                      >
+                        View
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div class="recipe-info">
-            <h3>Chicken Curry</h3>
-            <p class="recipe-meta">Indian • 45 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn save-btn">Unsave</button>
-            </div>
-          </div>
-        </div>
+        )}
+      </section>
+    </main>
+  );
+}
 
-        <div class="recipe-card">
-          <div class="recipe-image">
-            <img src="https://via.placeholder.com/200x150/2d5c4f/ffffff?text=SR3" alt="Saved Recipe 3">
-          </div>
-          <div class="recipe-info">
-            <h3>Avocado Toast</h3>
-            <p class="recipe-meta">Breakfast • 10 mins</p>
-            <div class="recipe-actions">
-              <button class="recipe-btn view-btn">View</button>
-              <button class="recipe-btn save-btn">Unsave</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 CookHub. All rights reserved.</p>
-  </footer>
-
-  <script>
-    // Set username from session storage
-    document.addEventListener('DOMContentLoaded', function() {
-      const userName = sessionStorage.getItem('currentUser') || 'User';
-      document.getElementById('userName').textContent = userName;
-    });
-  </script>
-</body>
-</html>
+export default Dashboard;
