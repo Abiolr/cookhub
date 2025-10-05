@@ -99,7 +99,7 @@ const View = ({ recipe, currentUser }) => {
         </div>
 
         <section className="recipe-header">
-          <div className="recipe-hero">
+          <div className="recipe-hero" style={{backgroundImage: `url(${recipe.image_url})`}}>
             <img
               src={recipe.image_url || 'https://via.placeholder.com/800x400'}
               alt={recipe.title}
