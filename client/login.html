@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - CookHub</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Pre-login header -->
+  <div class="pre-login-header">
+    <div class="logo-name">
+      <img src="CookHub_Logo.png" alt="CookHub Logo" class="logo-image">
+      <span>CookHub</span>
+    </div>
+    <nav class="auth-buttons">
+      <a href="login.html"><button>Login</button></a>
+      <a href="register.html"><button>Register</button></a>
+    </nav>
+  </div>
+
+  <!-- Login Section -->
+  <section class="auth-section">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h1 class="auth-title">Login to CookHub</h1>
+        <p class="auth-subtitle">Welcome back! Please enter your details.</p>
+        
+        <form class="auth-form" id="loginForm">
+          <div class="form-group">
+            <label for="username" class="form-label">Username:</label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              class="form-input"
+              placeholder="Enter your username"
+              required
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password:</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input"
+              placeholder="Enter your password"
+              required
+            >
+          </div>
+          
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" name="remember">
+              <span class="checkmark"></span>
+              Remember me
+            </label>
+            <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+          </div>
+          
+          <button type="submit" class="auth-submit-btn">
+            Enter
+          </button>
+        </form>
+        
+        <div class="auth-divider">
+          <span>Don't have an account?</span>
+        </div>
+        
+        <a href="register.html" class="auth-alt-link">
+          Create account
+        </a>
+        
+        <div class="auth-demo">
+          <p>Demo Accounts:</p>
+          <button class="demo-btn" onclick="fillDemo('user1')">User 1</button>
+          <button class="demo-btn" onclick="fillDemo('user2')">User 2</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CookHub. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Form submission handler
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Simple validation
+      if (username && password) {
+        // Simulate login process
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('currentUser', username);
+        
+        // Show success message
+        alert('Login successful! Redirecting to recipes...');
+        
+        // Redirect to recipes page
+        window.location.href = 'recipes.html';
+      } else {
+        alert('Please fill in all fields');
+      }
+    });
+
+    // Demo account filler
+    function fillDemo(account) {
+      const demoAccounts = {
+        'user1': { username: 'demo_user', password: 'password123' },
+        'user2': { username: 'cook_lover', password: 'cookhub2025' }
+      };
+      
+      const demo = demoAccounts[account];
+      document.getElementById('username').value = demo.username;
+      document.getElementById('password').value = demo.password;
+    }
+  </script>
+</body>
+</html>
