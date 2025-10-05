@@ -71,12 +71,16 @@ class Database:
         )
 
     def create_users_table(self):
-        """Create the Users table if it doesn't exist."""
+        """(Dev only) Drop & recreate the Users table."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
-        
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS Users (
+
+        # ✅ Disable FK checks temporarily
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+
+        drop_query = "DROP TABLE IF EXISTS Users"
+        create_query = """
+        CREATE TABLE Users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(255) UNIQUE NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL,
@@ -84,39 +88,48 @@ class Database:
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """
-        
+
         try:
-            cursor.execute(create_table_query)
+            cursor.execute(drop_query)
+            cursor.execute(create_query)
             connection.commit()
-            print("Users table created successfully!")
+            print("✅ Users table recreated successfully!")
         except mysql.connector.Error as e:
-            print(f"Error creating Users table: {e}")
+            print(f"❌ Error creating Users table: {e}")
         finally:
+            # ✅ Re-enable FK checks
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
             cursor.close()
             connection.close()
 
+
+
     def create_recipes_table(self):
-        """Create the Recipes table if it doesn't exist."""
+        """(Dev only) Drop & recreate the Recipes table."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
-        
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS Recipes (
+
+        drop_query = "DROP TABLE IF EXISTS Recipes"
+        create_query = """
+        CREATE TABLE Recipes (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            image_url VARCHAR(255),
             ingredients JSON NOT NULL,
-            instructions TEXT NOT NULL,
+            instructions JSON NOT NULL,
             user_id INT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL
         )
         """
-        
+
         try:
-            cursor.execute(create_table_query)
+            cursor.execute(drop_query)
+            cursor.execute(create_query)
             connection.commit()
-            print("Recipes table created successfully!")
+            print("✅ Recipes table recreated successfully!")
         except mysql.connector.Error as e:
-            print(f"Error creating Recipes table: {e}")
+            print(f"❌ Error creating Recipes table: {e}")
         finally:
             cursor.close()
             connection.close()
@@ -237,6 +250,33 @@ class Database:
         finally:
             cursor.close()
             connection.close()
+            
+    def save_recipe(self, user_id, title, ingredients, instructions, image_url):
+        """Save a recipe to the Recipes table."""
+        connection = self.get_db_connection()
+        cursor = connection.cursor()
+        try:
+            query = """
+            INSERT INTO Recipes (user_id, title, image_url, ingredients, instructions, created_at)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+            """
+            cursor.execute(query, (
+                user_id,
+                title,
+                image_url,
+                json.dumps(ingredients),
+                json.dumps(instructions)
+            ))
+            connection.commit()
+            return True, "Recipe saved successfully"
+        except mysql.connector.Error as e:
+            connection.rollback()
+            print(f"Error saving recipe: {e}")
+            return False, f"Database error: {e}"
+        finally:
+            cursor.close()
+            connection.close()
+
 
 if __name__ == "__main__":
     db = Database()
