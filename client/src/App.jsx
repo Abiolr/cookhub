@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Header from './components/Header'
-import Homepage from './components/Homepage'
-import './styles/styles.css'
+import Login from './components/Login'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -9,8 +8,7 @@ function App() {
   return (
     <>
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Homepage />
-      <Footer />
+      <Login setIsLoggedIn={setIsLoggedIn} />
     </>
   )
 }
