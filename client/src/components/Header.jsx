@@ -1,8 +1,7 @@
-
+import logoUrl from '../assets/CookHub_Logo.png'
 
 function Header({isLoggedIn, setIsLoggedIn}) {
-    const logoUrl = "/CookHub_Logo.png";
-
+    
     return (<header className="header">{isLoggedIn  ? (
     // if logged in
     <div>
