@@ -1,3 +1,8 @@
+import { useState } from 'react'
+import Header from './components/Header.jsx'
+import Homepage from './components/Homepage.jsx'
+import Search from './components/Search.jsx'
+import Registration from './components/Registration.jsx'  
 import { useState, useEffect } from "react";
 import Header from "./components/Header.jsx";
 import Homepage from "./components/Homepage.jsx";
@@ -136,6 +141,7 @@ function App() {
 
   return (
     <>
+    <Search/>
       <Header 
         isLoggedIn={isLoggedIn}
         currentView={currentView}

@@ -63,6 +63,35 @@ export default function Registration({ onRegistrationSuccess, onNavigateToLogin 
 
             const data = await response.json();
 
+    try {
+        const response = await fetch(`${API_BASE_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            email: realName,
+            password: password1,
+          }),
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          setError(data.message || 'Registration failed');
+        } else {
+          console.log('User registered:', data);
+          setUsername('');
+          setRealName('');
+          setPassword1('');
+          setPassword2('');
+        }
+      } catch (err) {
+        setError('Network error. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
             if (!response.ok || !data.success) {
                 // Handle errors returned from API
                 setError(data.message || 'Registration failed');
