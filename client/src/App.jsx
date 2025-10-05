@@ -14,34 +14,42 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  // Debug: Log state changes
+  // ✅ Load user session from localStorage when app starts
   useEffect(() => {
-    console.log(
-      "App State - isLoggedIn:",
-      isLoggedIn,
-      "currentUser:",
-      currentUser
-    );
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      setCurrentUser(parsedUser);
+      setIsLoggedIn(true);
+      console.log("Restored user from localStorage:", parsedUser);
+    }
+  }, []); // runs only once
+
+  // Debug log for development
+  useEffect(() => {
+    console.log("App State - isLoggedIn:", isLoggedIn, "currentUser:", currentUser);
   }, [isLoggedIn, currentUser]);
 
-  // Handle successful login/registration
+  // ✅ Handle successful login/registration
   const handleAuthSuccess = (userData) => {
-    console.log('Authentication successful, user data:', userData);
+    console.log("Authentication successful, user data:", userData);
     setCurrentUser(userData);
     setIsLoggedIn(true);
+    localStorage.setItem("user", JSON.stringify(userData)); // Save for refresh
   };
 
-  // Handle logout properly
+  // ✅ Handle logout
   const handleLogout = () => {
     console.log("Logging out...");
     setCurrentUser(null);
     setIsLoggedIn(false);
     setSelectedRecipe(null);
+    localStorage.removeItem("user"); // Clear session
   };
 
   // Handle viewing a recipe
   const handleViewRecipe = (recipe) => {
-    console.log('Viewing recipe in App:', recipe);
+    console.log("Viewing recipe in App:", recipe);
     setSelectedRecipe(recipe);
   };
 
@@ -53,6 +61,7 @@ function App() {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
+
         <main className="main-content">
           <Routes>
             {/* Public routes */}
@@ -81,6 +90,7 @@ function App() {
                 )
               } 
             />
+
             {/* Protected routes */}
             <Route 
               path="/dashboard" 
@@ -113,6 +123,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+
         {/* ✅ Footer appears on every page */}
         <Footer />
       </div>

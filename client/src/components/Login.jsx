@@ -62,6 +62,7 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
         // Call the parent handler
         if (setCurrentUser) {
           setCurrentUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData)); // ✅ save user persistently
         }
         
         // Clear form
