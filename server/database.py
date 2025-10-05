@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 from pathlib import Path
 
+# Load environment variables from .env file
 load_dotenv()
 
 class Database:
@@ -15,6 +16,8 @@ class Database:
         self.database = os.environ.get('RLWY_DB')
         self.port = os.environ.get('RLWY_PORT')
         self.sql_dir = Path(__file__).parent / "sql"
+        
+        # Validate that all required environment variables are set
         self._validate_environment()
 
     def _validate_environment(self):
@@ -99,8 +102,10 @@ class Database:
             cursor.close()
             connection.close()
 
+# database.py (Corrected create_recipes_table method)
+
     def create_recipes_table(self):
-        """(Dev only) Drop & recreate the Recipes table (linked by Spoonacular recipe ID)."""
+        """(Dev only) Drop & recreate the Recipes table (linked by user ID)."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
 
@@ -108,19 +113,16 @@ class Database:
         create_query = """
         CREATE TABLE Recipes (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            recipe_id INT NOT NULL UNIQUE,  -- Spoonacular recipe ID
+            recipe_id INT NOT NULL,
             title VARCHAR(255) NOT NULL,
             image_url VARCHAR(255),
             ingredients JSON NOT NULL,
-<<<<<<< HEAD
-            steps TEXT NOT NULL,
+            instructions JSON NOT NULL,
             user_id INT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL
-=======
-            instructions JSON NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
->>>>>>> main
+            FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+            -- ✅ ADDED: Composite UNIQUE key to prevent duplicate saves by the same user
+            UNIQUE KEY unique_user_recipe (user_id, recipe_id)
         )
         """
 
@@ -128,7 +130,7 @@ class Database:
             cursor.execute(drop_query)
             cursor.execute(create_query)
             connection.commit()
-            print("✅ Recipes table recreated successfully (linked by recipe_id)!")
+            print("✅ Recipes table recreated successfully (linked by user_id)!")
         except mysql.connector.Error as e:
             print(f"❌ Error creating Recipes table: {e}")
         finally:
@@ -253,14 +255,14 @@ class Database:
             cursor.close()
             connection.close()
             
-    def save_recipe(self, recipe_id, title, ingredients, instructions, image_url):
-        """Save a recipe using its Spoonacular recipe ID."""
+    def save_recipe(self, user_id, recipe_id, title, ingredients, instructions, image_url):
+        """Save a recipe for a specific user."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
         try:
             query = """
-            INSERT INTO Recipes (recipe_id, title, image_url, ingredients, instructions, created_at)
-            VALUES (%s, %s, %s, %s, %s, NOW())
+            INSERT INTO Recipes (user_id, recipe_id, title, image_url, ingredients, instructions, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, NOW())
             ON DUPLICATE KEY UPDATE
                 title = VALUES(title),
                 image_url = VALUES(image_url),
@@ -268,6 +270,7 @@ class Database:
                 instructions = VALUES(instructions)
             """
             cursor.execute(query, (
+                user_id,
                 recipe_id,
                 title,
                 image_url,
@@ -279,6 +282,33 @@ class Database:
         except mysql.connector.Error as e:
             connection.rollback()
             print(f"Error saving recipe: {e}")
+            return False, f"Database error: {e}"
+        finally:
+            cursor.close()
+            connection.close()
+
+    def get_recipes_by_user(self, user_id):
+        """Fetch all recipes saved by a specific user."""
+        connection = self.get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        try:
+            query = """
+            SELECT recipe_id, title, image_url, ingredients, instructions, created_at
+            FROM Recipes
+            WHERE user_id = %s
+            ORDER BY created_at DESC
+            """
+            cursor.execute(query, (user_id,))
+            results = cursor.fetchall()
+
+            # Convert JSON fields back into lists
+            for r in results:
+                r["ingredients"] = json.loads(r["ingredients"])
+                r["instructions"] = json.loads(r["instructions"])
+
+            return True, results
+        except mysql.connector.Error as e:
+            print(f"Error fetching user recipes: {e}")
             return False, f"Database error: {e}"
         finally:
             cursor.close()
