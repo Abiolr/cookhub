@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/View.css";
 
+const API_BASE_URL = 'https://cookhub-production.up.railway.app';
+
 const View = ({ recipe, currentUser }) => {
   const [checkedIngredients, setCheckedIngredients] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +32,7 @@ const View = ({ recipe, currentUser }) => {
 
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
   const instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
+  const isNewRecipe = recipe.isNewRecipe === true;
 
   const handleIngredientCheck = (index) => {
     setCheckedIngredients(prev => ({
@@ -37,7 +42,51 @@ const View = ({ recipe, currentUser }) => {
   };
 
   const handleBackClick = () => {
-    navigate('/dashboard');
+    navigate(isNewRecipe ? '/search' : '/dashboard');
+  };
+
+  // ✅ NEW: Save recipe to user's dashboard
+  const handleSaveRecipe = async () => {
+    if (!currentUser || !currentUser.userId) {
+      setSaveMessage('Error: You must be logged in to save recipes');
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveMessage('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/save_recipe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: currentUser.userId,
+          id: recipe.recipe_id,
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          steps: recipe.instructions,
+          image: recipe.image_url
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSaveMessage('✓ Recipe saved successfully!');
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
+      } else {
+        setSaveMessage(`Error: ${data.message || 'Failed to save recipe'}`);
+      }
+    } catch (err) {
+      console.error('Error saving recipe:', err);
+      setSaveMessage('Network error. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -45,18 +94,18 @@ const View = ({ recipe, currentUser }) => {
       <main className="recipe-view-container">
         <div className="back-nav">
           <button onClick={handleBackClick} className="back-link">
-            ← Back to My Recipes
+            ← Back to {isNewRecipe ? 'Search' : 'My Recipes'}
           </button>
         </div>
 
         <section className="recipe-header">
-          <div className="recipe-hero">
+          <div className="recipe-hero" style={{backgroundImage: `url(${recipe.image_url})`}}>
             <img
-              src={recipe.image_url || 'https://via.placeholder.com/800x400/1a3c34/ffffff?text=No+Image+Available'}
+              src={recipe.image_url || 'https://via.placeholder.com/800x400'}
               alt={recipe.title}
               className="recipe-main-image"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/800x400/1a3c34/ffffff?text=No+Image+Available';
+                e.target.src = 'https://via.placeholder.com/800x400';
               }}
             />
             <div className="recipe-overlay">
@@ -65,12 +114,34 @@ const View = ({ recipe, currentUser }) => {
                 <span>{ingredients.length} ingredients</span>
                 <span>•</span>
                 <span>{instructions.length} steps</span>
-                <span>•</span>
-                <span>Saved by {currentUser?.username}</span>
+                {!isNewRecipe && (
+                  <>
+                    <span>•</span>
+                    <span>Saved by {currentUser?.username}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </section>
+
+        {/* ✅ NEW: Save button and message for new recipes */}
+        {isNewRecipe && (
+          <section className="save-section">
+            <button
+              onClick={handleSaveRecipe}
+              disabled={isSaving}
+              className="save-recipe-button"
+            >
+              {isSaving ? 'Saving...' : 'Save to Dashboard'}
+            </button>
+            {saveMessage && (
+              <div className={`save-message ${saveMessage.startsWith('✓') ? 'success' : 'error'}`}>
+                {saveMessage}
+              </div>
+            )}
+          </section>
+        )}
 
         <section className="recipe-content">
           <div className="recipe-grid">
@@ -138,9 +209,6 @@ const View = ({ recipe, currentUser }) => {
         </section>
       </main>
 
-      <footer className="recipe-footer">
-        <p>&copy; 2025 CookHub. All rights reserved.</p>
-      </footer>
     </div>
   );
 };

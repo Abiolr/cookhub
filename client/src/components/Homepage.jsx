@@ -1,8 +1,10 @@
 // Homepage.jsx
 import React from 'react';
+import { useNavigate } from "react-router-dom"; // ✅ import this
 import "../styles/Homepage.css";
 
 const Homepage = () => {
+    const navigate = useNavigate(); // ✅ create the navigate function here
     return (
         <div className="homepage-container">
             <div className="homepage-content">
@@ -38,10 +40,7 @@ const Homepage = () => {
                 {/* Call to Action */}
                 <button 
                     className="cta-button" 
-                    onClick={() => {
-                        // TODO: Implement navigation to the /login or /register route using React Router
-                        console.log("Navigating to Login/Registration Page...");
-                    }}
+                    onClick={() => navigate("/login")} // ✅ navigates to login page
                 >
                     Discover Recipes Now!
                 </button>

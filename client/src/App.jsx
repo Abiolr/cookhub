@@ -7,40 +7,44 @@ import Registration from "./components/Registration.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import View from "./components/View.jsx";
 import Search from "./components/Search.jsx";
+import Footer from "./components/Footer.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  // Debug: Log state changes
   useEffect(() => {
-    console.log(
-      "App State - isLoggedIn:",
-      isLoggedIn,
-      "currentUser:",
-      currentUser
-    );
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      setCurrentUser(parsedUser);
+      setIsLoggedIn(true);
+      console.log("Restored user from localStorage:", parsedUser);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("App State - isLoggedIn:", isLoggedIn, "currentUser:", currentUser);
   }, [isLoggedIn, currentUser]);
 
-  // Handle successful login/registration
   const handleAuthSuccess = (userData) => {
-    console.log('Authentication successful, user data:', userData);
+    console.log("Authentication successful, user data:", userData);
     setCurrentUser(userData);
     setIsLoggedIn(true);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  // Handle logout properly
   const handleLogout = () => {
     console.log("Logging out...");
     setCurrentUser(null);
     setIsLoggedIn(false);
     setSelectedRecipe(null);
+    localStorage.removeItem("user");
   };
 
-  // Handle viewing a recipe
   const handleViewRecipe = (recipe) => {
-    console.log('Viewing recipe in App:', recipe);
+    console.log("Viewing recipe in App:", recipe);
     setSelectedRecipe(recipe);
   };
 
@@ -52,12 +56,26 @@ function App() {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
-        
+
         <main className="main-content">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Homepage />} />
-            <Route path="/search" element={<Search />} />
+            
+            {/* ✅ UPDATED: Pass props to Search */}
+            <Route 
+              path="/search" 
+              element={
+                isLoggedIn && currentUser ? (
+                  <Search 
+                    currentUser={currentUser}
+                    onViewRecipe={handleViewRecipe}
+                  />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              } 
+            />
+            
             <Route 
               path="/login" 
               element={
@@ -71,6 +89,7 @@ function App() {
                 )
               } 
             />
+            
             <Route 
               path="/register" 
               element={
@@ -81,8 +100,7 @@ function App() {
                 )
               } 
             />
-            
-            {/* Protected routes */}
+
             <Route 
               path="/dashboard" 
               element={
@@ -96,6 +114,8 @@ function App() {
                 )
               } 
             />
+            
+            {/* ✅ UPDATED: Allow viewing recipes from search OR dashboard */}
             <Route 
               path="/recipe/:recipeId" 
               element={
@@ -109,11 +129,12 @@ function App() {
                 )
               } 
             />
-            
-            {/* Fallback route */}
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+
+        <Footer />
       </div>
     </Router>
   );

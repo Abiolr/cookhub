@@ -11,40 +11,29 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
     navigate("/");
   };
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
 
   return (
     <header className="header">
       <div className="header-content">
-        {/* Logo - always clickable to go home */}
+        {/* Logo always clickable */}
         <Link to="/" className="logo-link">
-          <img
-            src={logoUrl}
-            className="header-logo"
-            alt="CookHub Logo"
-          />
+          <img src={logoUrl} className="header-logo" alt="CookHub Logo" />
         </Link>
 
         {/* Navigation buttons */}
         <div className="header-nav">
           {isLoggedIn ? (
-            // Logged in state
+            // 🔒 Logged-in state
             <>
-              <Link 
-                to="/dashboard" 
-                className={`header-button ${isActive('/dashboard') ? 'active' : ''}`}
+              <Link
+                to="/dashboard"
+                className={`header-button ${
+                  isActive("/dashboard") ? "active" : ""
+                }`}
               >
                 Dashboard
               </Link>
-              <Link 
-                to="/search" 
-                className={`header-button ${isActive('/search') ? 'active' : ''}`}
-              >
-                Search Recipes
-              </Link>
-              <button className="header-button">Account</button>
               <button
                 className="header-button logout-button"
                 onClick={handleLogout}
@@ -53,33 +42,31 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
               </button>
             </>
           ) : (
-            // Not logged in state
+            // 🔓 Logged-out state
             <>
-              <Link 
-                to="/login" 
-                className={`header-button ${isActive('/login') ? 'active' : ''}`}
+              <Link
+                to="/login"
+                className={`header-button ${
+                  isActive("/login") ? "active" : ""
+                }`}
               >
                 Login
               </Link>
-              <Link 
-                to="/register" 
-                className={`header-button ${isActive('/register') ? 'active' : ''}`}
+              <Link
+                to="/register"
+                className={`header-button ${
+                  isActive("/register") ? "active" : ""
+                }`}
               >
                 Sign Up
-              </Link>
-              <Link 
-                to="/search" 
-                className={`header-button ${isActive('/search') ? 'active' : ''}`}
-              >
-                Search Recipes
               </Link>
             </>
           )}
 
-          {/* Always visible buttons */}
-          <Link 
-            to="/about" 
-            className={`header-button ${isActive('/about') ? 'active' : ''}`}
+          {/* 🏠 About (always visible, returns home) */}
+          <Link
+            to="/"
+            className={`header-button ${isActive("/") ? "active" : ""}`}
           >
             About
           </Link>
