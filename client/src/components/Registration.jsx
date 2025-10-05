@@ -1,48 +1,36 @@
-import React, {useState} from 'react'
-import '../styles/Registration.css'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Registration.css';
 
 const API_BASE_URL = 'https://cookhub-production.up.railway.app';
 
-export default function Registration({ onRegistrationSuccess, onNavigateToLogin }){
-    const [username, setUsername]= useState("");
-    const [realName, setRealName]= useState("");
-    const [password1, setPassword1]= useState("");
-    const [password2, setPassword2]= useState("");
+export default function Registration({ onRegistrationSuccess }) {
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password1, setPassword1] = useState("");
+    const [password2, setPassword2] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
-    // take username from user
-    function handleUsernameChange(event){
-        setUsername(event.target.value)
-    }
-    function handleRealNameChange(event){
-        setRealName(event.target.value)
-    }
-    function handlePassword1Change(event){
-        setPassword1(event.target.value)
-    }
-    function handlePassword2Change(event){
-        setPassword2(event.target.value)
-    }
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("")
-        setSuccess("")
+        setError("");
+        setSuccess("");
 
-        if(!username || !realName || !password1 || !password2){
-            setError("Please enter all fields")
+        if (!username || !email || !password1 || !password2) {
+            setError("Please enter all fields");
             return;
         }
 
-        if(password1 !== password2){
-            setError("Passwords do not match")
+        if (password1 !== password2) {
+            setError("Passwords do not match");
             return;
         }
 
-        if(password1.length < 6){
-            setError("Password must be at least 6 characters long")
+        if (password1.length < 6) {
+            setError("Password must be at least 6 characters long");
             return;
         }
 
@@ -56,64 +44,30 @@ export default function Registration({ onRegistrationSuccess, onNavigateToLogin 
                 },
                 body: JSON.stringify({
                     username: username,
-                    email: realName,
+                    email: email,
                     password: password1,
                 }),
             });
 
             const data = await response.json();
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            email: realName,
-            password: password1,
-          }),
-        });
-    
-        const data = await response.json();
-    
-        if (!response.ok) {
-          setError(data.message || 'Registration failed');
-        } else {
-          console.log('User registered:', data);
-          setUsername('');
-          setRealName('');
-          setPassword1('');
-          setPassword2('');
-        }
-      } catch (err) {
-        setError('Network error. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
             if (!response.ok || !data.success) {
-                // Handle errors returned from API
                 setError(data.message || 'Registration failed');
             } else {
-                // Registration successful
                 console.log('User registered successfully:', data);
                 setSuccess('Registration successful! Redirecting to dashboard...');
                 
-                // Create user data object for the app state
                 const userData = {
                     userId: data.user_id,
                     username: username,
-                    email: realName
+                    email: email
                 };
                 
-                // Clear form
                 setUsername('');
-                setRealName('');
+                setEmail('');
                 setPassword1('');
                 setPassword2('');
                 
-                // Call the success callback after a short delay
                 setTimeout(() => {
                     if (onRegistrationSuccess) {
                         onRegistrationSuccess(userData);
@@ -121,7 +75,6 @@ export default function Registration({ onRegistrationSuccess, onNavigateToLogin 
                 }, 1500);
             }
         } catch (err) {
-            // Handle network errors
             setError('Network error. Please try again later.');
             console.error('Registration error:', err);
         } finally {
@@ -129,93 +82,145 @@ export default function Registration({ onRegistrationSuccess, onNavigateToLogin 
         }
     };
 
+    const handleNavigateToLogin = () => {
+        navigate('/login');
+    };
+
     return (
-        <div className="registration-container">
-            <h1 className="registration-header">Create Your CookHub Account</h1>
-            
-            {error && (
-                <div className="error-message">
-                    {error}
-                </div>
-            )}
-            
-            {success && (
-                <div className="success-message">
-                    {success}
-                </div>
-            )}
-            
-            <div className="registration-form">
-                <input 
-                    value={username}
-                    onChange={handleUsernameChange} 
-                    type="text" 
-                    placeholder="Username"
-                    disabled={isLoading}
-                />
-                <input 
-                    value={realName}
-                    onChange={handleRealNameChange}
-                    type="email"
-                    placeholder="Email address"
-                    disabled={isLoading}
-                />
-                <input
-                    value={password1}
-                    onChange={handlePassword1Change}
-                    type="password"
-                    placeholder="Password"
-                    disabled={isLoading}
-                />
-                <input
-                    value={password2}
-                    onChange={handlePassword2Change}
-                    type="password"
-                    placeholder="Confirm password"
-                    disabled={isLoading}
-                />
-                
-                <button 
-                    onClick={handleSubmit} 
-                    disabled={isLoading}
-                    className="registration-button"
-                >
-                    {isLoading ? 'Creating Account...' : 'Create Account'}
-                </button>
-            </div>
-            
-            <div className="password-match-indicator">
-                <div
-                    className="indicator-circle"
-                    style={{
-                        backgroundColor:
-                        password1 && password2
-                            ? password1 === password2
-                                ? "green"
-                                : "red"
-                            : "gray",
-                    }}
-                ></div>
-                <span className="indicator-message">
-                    {password1 && password2
-                    ? password1 === password2
-                        ? "Passwords match"
-                        : "Passwords do not match"
-                    : "Enter both passwords"}
-                </span>
-            </div>
-            
-            <div className="registration-footer">
-                <p>Already have an account? 
-                    <span 
-                        className="login-link" 
-                        onClick={onNavigateToLogin}
-                        style={{cursor: 'pointer', color: '#1a3c34', fontWeight: 'bold', marginLeft: '5px'}}
+        <div className="auth-section">
+            <div className="auth-container">
+                <div className="auth-card">
+                    <h2 className="auth-title">Join CookHub</h2>
+                    <p className="auth-subtitle">Create your account to start cooking!</p>
+                    
+                    <form className="auth-form" onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="error-message">
+                                {error}
+                            </div>
+                        )}
+                        
+                        {success && (
+                            <div className="success-message">
+                                {success}
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label htmlFor="username" className="form-label">
+                                Username:
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                className="form-input"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Choose a username"
+                                disabled={isLoading}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="email" className="form-label">
+                                Email:
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                className="form-input"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                disabled={isLoading}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password1" className="form-label">
+                                Password:
+                            </label>
+                            <input
+                                type="password"
+                                id="password1"
+                                name="password1"
+                                className="form-input"
+                                value={password1}
+                                onChange={(e) => setPassword1(e.target.value)}
+                                placeholder="Create a password (min. 6 characters)"
+                                disabled={isLoading}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password2" className="form-label">
+                                Confirm Password:
+                            </label>
+                            <input
+                                type="password"
+                                id="password2"
+                                name="password2"
+                                className="form-input"
+                                value={password2}
+                                onChange={(e) => setPassword2(e.target.value)}
+                                placeholder="Confirm your password"
+                                disabled={isLoading}
+                                required
+                            />
+                        </div>
+
+                        {/* Password Match Indicator */}
+                        {(password1 || password2) && (
+                            <div className="password-match-indicator">
+                                <div
+                                    className="indicator-circle"
+                                    style={{
+                                        backgroundColor:
+                                            password1 && password2
+                                                ? password1 === password2
+                                                    ? "#4caf50"
+                                                    : "#f44336"
+                                                : "#9e9e9e",
+                                    }}
+                                ></div>
+                                <span className="indicator-message">
+                                    {password1 && password2
+                                        ? password1 === password2
+                                            ? "Passwords match"
+                                            : "Passwords do not match"
+                                        : "Enter both passwords"}
+                                </span>
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="auth-submit-btn"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Creating Account...' : 'Create Account'}
+                        </button>
+                    </form>
+
+                    <div className="auth-divider">
+                        <span>Already have an account?</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="auth-alt-link"
+                        onClick={handleNavigateToLogin}
+                        disabled={isLoading}
                     >
                         Login here
-                    </span>
-                </p>
+                    </button>
+                </div>
             </div>
         </div>
-    )
+    );
 }
