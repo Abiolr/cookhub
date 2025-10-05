@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const API_BASE_URL = 'https://cookhub-production.up.railway.app';
 
-function Login({ setIsLoggedIn, setCurrentUser }) {
+function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -51,23 +51,19 @@ function Login({ setIsLoggedIn, setCurrentUser }) {
       if (response.ok && data.success) {
         console.log('Login successful, user data:', data.user);
         
-        // FIXED: Use the correct field names from the API response
+        // Create user data object
         const userData = {
-          userId: data.user.id,  // Changed from user_id to id
+          userId: data.user.id,
           username: data.user.username,
           email: data.user.email
         };
         
         console.log('Setting user data:', userData);
         
-        // IMPORTANT: Set user data FIRST, then set logged in status
-        setCurrentUser(userData);
-        
-        // Small delay to ensure state updates properly
-        setTimeout(() => {
-          setIsLoggedIn(true);
-          console.log('User logged in');
-        }, 100);
+        // Call the parent handler
+        if (setCurrentUser) {
+          setCurrentUser(userData);
+        }
         
         // Clear form
         setFormData({
@@ -92,14 +88,7 @@ function Login({ setIsLoggedIn, setCurrentUser }) {
         <h2>Login to CookHub</h2>
         <form onSubmit={handleSubmit}>
           {error && (
-            <div className="error-message" style={{ 
-              color: 'white',
-              backgroundColor: '#d32f2f',
-              padding: '12px',
-              borderRadius: '6px',
-              marginBottom: '15px',
-              textAlign: 'center'
-            }}>
+            <div className="error-message">
               {error}
             </div>
           )}
@@ -139,9 +128,17 @@ function Login({ setIsLoggedIn, setCurrentUser }) {
           </button>
         </form>
         
-        <div style={{ marginTop: '20px', textAlign: 'center', color: '#666' }}>
-          <p>Don't have an account? <a href="#" style={{ color: '#1a3c34', fontWeight: 'bold' }}>Sign Up</a></p>
-          <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
+        <div className="login-footer">
+          <p>Don't have an account? 
+            <span 
+              className="register-link" 
+              onClick={onNavigateToRegister}
+              style={{cursor: 'pointer', color: '#1a3c34', fontWeight: 'bold', marginLeft: '5px'}}
+            >
+              Sign Up
+            </span>
+          </p>
+          <p className="test-account">
             <strong>Test Account:</strong><br />
             Username: testuser<br />
             Password: testpass123
