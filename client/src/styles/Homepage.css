@@ -1,0 +1,129 @@
+/* homepage.css */
+
+/* Keyframe Animation for Fade-In Effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Start slightly below final position */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Main Container: Full viewport height, subtle dark background */
+.homepage-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f7f7f7 0%, #e0e0e0 100%);
+    color: #333;
+}
+
+/* Content Box: The main focus area with a card-like appearance */
+.homepage-content {
+    max-width: 900px;
+    padding: 60px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Title Styling */
+.homepage-content h1 {
+    font-size: 3.5rem;
+    color: #46572e; /* A vibrant, food-related color */
+    margin-bottom: 20px;
+    font-weight: 700;
+    /* Apply animation to the main title */
+    animation: fadeIn 1s ease-out;
+}
+
+/* Subtitle Styling */
+.homepage-content h2 {
+    font-size: 1.8rem;
+    color: #6c757d;
+    margin-bottom: 40px;
+    font-weight: 300;
+    /* Delay the animation for the subtitle */
+    animation: fadeIn 1s ease-out 0.3s forwards;
+    opacity: 0; /* Start invisible */
+}
+
+/* Feature/How-it-works section styling */
+.features-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.feature-item {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    /* Apply animation with staggered delay */
+    animation: fadeIn 1s ease-out forwards;
+    opacity: 0;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.6s; }
+.feature-item:nth-child(2) { animation-delay: 0.9s; }
+.feature-item:nth-child(3) { animation-delay: 1.2s; }
+
+.feature-item h3 {
+    color: #46572e;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.feature-item p {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Call to Action Button */
+.cta-button {
+    margin-top: 50px;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color:#694333; /* Primary action color */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    animation: fadeIn 1s ease-out 1.5s forwards;
+    opacity: 0;
+}
+
+.cta-button:hover {
+    background-color:rgb(107, 78, 65); 
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .homepage-content {
+        padding: 40px 20px;
+    }
+
+    .homepage-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .homepage-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .features-grid {
+        flex-direction: column;
+    }
+}
