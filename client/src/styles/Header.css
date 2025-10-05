@@ -1,0 +1,25 @@
+.header {
+    position: fixed;       /* sticks to the top of the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;           /* full width */
+    height: 80px;          /* adjust as needed */
+    background-color: #333; 
+    color: white;
+    display: flex;         /* flex layout for content */
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1000;         /* ensures it stays on top of other elements */
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .header-right button {
+    margin-left: 10px;
+  }
