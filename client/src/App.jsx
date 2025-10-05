@@ -13,9 +13,16 @@ function App() {
     console.log('App State - isLoggedIn:', isLoggedIn, 'currentUser:', currentUser);
   }, [isLoggedIn, currentUser]);
 
+  // Handle logout properly
+  const handleLogout = () => {
+    console.log('Logging out...');
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+  };
+
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={handleLogout} />
       
       {isLoggedIn && currentUser ? (
         <Dashboard currentUser={currentUser} />
