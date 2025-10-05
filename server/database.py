@@ -5,7 +5,6 @@ from datetime import datetime
 import json
 from pathlib import Path
 
-# Load environment variables from .env file
 load_dotenv()
 
 class Database:
@@ -16,8 +15,6 @@ class Database:
         self.database = os.environ.get('RLWY_DB')
         self.port = os.environ.get('RLWY_PORT')
         self.sql_dir = Path(__file__).parent / "sql"
-        
-        # Validate that all required environment variables are set
         self._validate_environment()
 
     def _validate_environment(self):
@@ -104,7 +101,7 @@ class Database:
         CREATE TABLE IF NOT EXISTS Recipes (
             id INT AUTO_INCREMENT PRIMARY KEY,
             ingredients JSON NOT NULL,
-            instructions TEXT NOT NULL,
+            steps TEXT NOT NULL,
             user_id INT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL

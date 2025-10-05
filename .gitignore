@@ -1,5 +1,6 @@
 # Ignore virtual environment
 .venv/
 venv/
+__pycache__/
 
 /server/.env

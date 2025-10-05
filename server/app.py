@@ -13,13 +13,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# ✅ Spoonacular API key
 API_KEY = os.getenv("SPOONACULAR_KEY")
 
-# -----------------------------------------------
-# 🏠 EXISTING ENDPOINT — Health Check
-# -----------------------------------------------
-# Initialize database
 db = Database()
 
 @app.route('/')
@@ -36,21 +31,26 @@ def home():
         })
 
 # -----------------------------------------------
-# 🍳 NEW ENDPOINT — Search Recipes by Ingredients
+# Search Recipes by Ingredients
 # -----------------------------------------------
+import random
+import requests
+from flask import request, jsonify
+
 @app.route('/search_recipes', methods=['POST'])
 def search_recipes():
-    """Find recipes that use the given list of ingredients."""
+    """Find random recipes that use the given list of ingredients."""
     data = request.get_json()
     ingredients = data.get('ingredients', [])
 
     if not ingredients or not isinstance(ingredients, list):
         return jsonify({"error": "Please provide a list of ingredients."}), 400
 
+    # Get more recipes to randomize from
     params = {
         "ingredients": ",".join(ingredients),
-        "number": 3,              # how many results to return
-        "ranking": 1,              # 1 = maximize used ingredients
+        "number": 50,  # Get more recipes to choose from
+        "ranking": 1,
         "ignorePantry": True,
         "apiKey": API_KEY
     }
@@ -63,12 +63,18 @@ def search_recipes():
         response.raise_for_status()
         recipes = response.json()
 
+        # Randomly select 3 recipes from the results
+        if len(recipes) > 3:
+            recipes = random.sample(recipes, 3)
+        else:
+            recipes = recipes[:3]  # Just take what's available
+
         # Simplify response for frontend
         result = [
             {
                 "id": r["id"],
                 "title": r["title"],
-                "image": r.get("image"),  # direct URL for <img src=...>
+                "image": r.get("image"),
                 "usedIngredientCount": r.get("usedIngredientCount"),
                 "missedIngredientCount": r.get("missedIngredientCount")
             }
@@ -80,9 +86,8 @@ def search_recipes():
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
 
-
 # -----------------------------------------------
-# 🥘 NEW ENDPOINT — Get Recipe Details by ID
+# Get Recipe Details by ID
 # -----------------------------------------------
 @app.route('/recipes/<int:recipe_id>', methods=['GET'])
 def get_recipe(recipe_id):
@@ -123,6 +128,9 @@ def get_recipe(recipe_id):
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
 
+# -----------------------------------------------
+# Register User
+# -----------------------------------------------
 @app.route('/register', methods=['POST'])
 def register_user():
     """Register a new user.
@@ -182,6 +190,9 @@ def register_user():
             "message": "Internal server error"
         }), 500
 
+# -----------------------------------------------
+# Login User
+# -----------------------------------------------
 @app.route('/login', methods=['POST'])
 def login_user():
     """Login an existing user.
