@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Header from './components/Header.jsx'
 import Homepage from './components/Homepage.jsx'
+import Search from './components/Search.jsx'
 import Registration from './components/Registration.jsx'  
 
 function App() {
@@ -8,8 +9,7 @@ function App() {
 
   return (
     <>
-      <Header/>
-      <Registration/>
+    <Search/>
     </>
   )
 }

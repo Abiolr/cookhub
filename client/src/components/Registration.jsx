@@ -57,19 +57,15 @@ export default function Registration(){
         const data = await response.json();
     
         if (!response.ok) {
-          // Handle errors returned from API
           setError(data.message || 'Registration failed');
         } else {
-          // Registration successful
           console.log('User registered:', data);
-          // Optionally, redirect the user or clear form
           setUsername('');
           setRealName('');
           setPassword1('');
           setPassword2('');
         }
       } catch (err) {
-        // Handle network errors
         setError('Network error. Please try again later.');
       } finally {
         setIsLoading(false);
