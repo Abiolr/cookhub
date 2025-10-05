@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Header from './components/Header'
 import Homepage from './components/Homepage'
-import './styles/styles.css'
+import Footer from './components/Footer' // ✅ Add this
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -10,7 +10,7 @@ function App() {
     <>
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Homepage />
-      <Footer />
+      <Footer /> {/* ✅ This renders your footer */}
     </>
   )
 }
