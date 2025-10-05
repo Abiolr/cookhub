@@ -26,14 +26,14 @@
 }
 
 .auth-title {
-  color: #1a3c34;
+  color: #3f4e2b;
   font-size: 2.2em;
   margin-bottom: 10px;
   font-weight: bold;
 }
 
 .auth-subtitle {
-  color: #2d5c4f;
+  color: #3f4e2b;
   margin-bottom: 30px;
   font-size: 1.1em;
 }
@@ -49,7 +49,7 @@
 
 .form-label {
   display: block;
-  color: #1a3c34;
+  color: #3f4e2b;
   margin-bottom: 8px;
   font-weight: 500;
   font-size: 1em;
@@ -67,7 +67,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #1a3c34;
+  border-color: #3f4e2b;
   box-shadow: 0 0 0 3px rgba(26, 60, 52, 0.1);
 }
 
@@ -94,7 +94,7 @@
 .checkbox-label {
   display: flex;
   align-items: center;
-  color: #2d5c4f;
+  color: #3f4e2b;
   cursor: pointer;
   font-size: 0.9em;
 }
@@ -109,19 +109,19 @@
   position: absolute;
   top: -2px;
   left: 1px;
-  color: #1a3c34;
+  color:#3f4e2b;
   font-weight: bold;
 }
 
 .forgot-link {
-  color: #1a3c34;
+  color: #3f4e2b;
   text-decoration: none;
   font-size: 0.9em;
   transition: color 0.3s ease;
 }
 
 .forgot-link:hover {
-  color: #2d5c4f;
+  color: #3f4e2b;
   text-decoration: underline;
 }
 
@@ -129,7 +129,7 @@
 .auth-submit-btn {
   width: 100%;
   padding: 14px;
-  background-color: #1a3c34;
+  background-color:#3f4e2b;
   color: white;
   border: none;
   border-radius: 6px;
@@ -141,7 +141,7 @@
 }
 
 .auth-submit-btn:hover:not(:disabled) {
-  background-color: #2d5c4f;
+  background-color: #3f4e2b;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(26, 60, 52, 0.3);
 }
@@ -162,7 +162,7 @@
   margin: 25px 0;
   position: relative;
   text-align: center;
-  color: #2d5c4f;
+  color: #3f4e2b;
   font-size: 0.9em;
 }
 
@@ -187,19 +187,36 @@
 /* Alternative Auth Link */
 .auth-alt-link {
   display: block;
+  width: 100%;
   padding: 12px;
   background-color: white;
-  color: #1a3c34;
-  border: 2px solid #1a3c34;
+  color: #3f4e2b;
+  border: 2px solid #3f4e2b;
   border-radius: 6px;
   text-decoration: none;
+  text-align: center;
   font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
+  margin: 0 auto;
+}
+
+.auth-alt-link:hover:not(:disabled) {
+  background-color: #3f4e2b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(63, 78, 43, 0.3);
+}
+
+.auth-alt-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .auth-alt-link:hover {
-  background-color: #1a3c34;
+  background-color:#3f4e2b;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(26, 60, 52, 0.3);

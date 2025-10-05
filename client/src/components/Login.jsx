@@ -1,15 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
 const API_BASE_URL = "https://cookhub-production.up.railway.app";
 
-function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
+function Login({ setIsLoggedIn, setCurrentUser }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,7 +52,6 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
       if (response.ok && data.success) {
         console.log('Login successful, user data:', data.user);
         
-        // Create user data object
         const userData = {
           userId: data.user.id,
           username: data.user.username,
@@ -59,13 +60,11 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
         
         console.log('Setting user data:', userData);
         
-        // Call the parent handler
         if (setCurrentUser) {
           setCurrentUser(userData);
-          localStorage.setItem("user", JSON.stringify(userData)); // ✅ save user persistently
+          localStorage.setItem("user", JSON.stringify(userData));
         }
         
-        // Clear form
         setFormData({
           username: "",
           password: "",
@@ -81,6 +80,11 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // ✅ NEW: Navigate to registration page
+  const handleNavigateToRegister = () => {
+    navigate('/register');
   };
 
   return (
@@ -154,19 +158,15 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
             <span>Don't have an account?</span>
           </div>
 
+          {/* ✅ FIXED: Now navigates to /register */}
           <button 
+            type="button"
             className="auth-alt-link"
-            onClick={onNavigateToRegister}
+            onClick={handleNavigateToRegister}
             disabled={isLoading}
           >
             Create account
           </button>
-          
-          <div className="test-account">
-            <p><strong>Test Account:</strong></p>
-            <p>Username: testuser</p>
-            <p>Password: testpass123</p>
-          </div>
         </div>
       </div>
     </div>

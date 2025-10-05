@@ -68,11 +68,16 @@ function Dashboard({ currentUser, onViewRecipe }) {
   const handleViewRecipe = (recipe) => {
     console.log('=== VIEW RECIPE CLICKED ===');
     console.log('Recipe data:', recipe);
+
+      // ✅ Ensure isNewRecipe is false for saved recipes
+    const recipeToView = {
+      ...recipe,
+      isNewRecipe: false
+    };
     
     if (onViewRecipe && typeof onViewRecipe === 'function') {
       console.log('Calling onViewRecipe...');
-      onViewRecipe(recipe);
-      // Navigate to recipe view
+      onViewRecipe(recipeToView);
       navigate(`/recipe/${recipe.recipe_id}`);
     } else {
       console.error('onViewRecipe is not a function or is undefined');
