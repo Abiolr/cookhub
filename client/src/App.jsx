@@ -7,6 +7,7 @@ import Registration from "./components/Registration.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import View from "./components/View.jsx";
 import Search from "./components/Search.jsx";
+import Footer from "./components/Footer.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,7 +53,6 @@ function App() {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
-        
         <main className="main-content">
           <Routes>
             {/* Public routes */}
@@ -81,7 +81,6 @@ function App() {
                 )
               } 
             />
-            
             {/* Protected routes */}
             <Route 
               path="/dashboard" 
@@ -109,11 +108,13 @@ function App() {
                 )
               } 
             />
-            
+
             {/* Fallback route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+        {/* ✅ Footer appears on every page */}
+        <Footer />
       </div>
     </Router>
   );
