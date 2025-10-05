@@ -1,16 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './components/Header'
-import Homepage from './components/Homepage'
-import Footer from './components/Footer' // ✅ Add this
+import Login from './components/Login'
+import Dashboard from './components/Dashboard'
+import Footer from './components/Footer'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('App State - isLoggedIn:', isLoggedIn, 'currentUser:', currentUser);
+  }, [isLoggedIn, currentUser]);
 
   return (
     <>
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Homepage />
-      <Footer /> {/* ✅ This renders your footer */}
+      
+      {isLoggedIn && currentUser ? (
+        <Dashboard currentUser={currentUser} />
+      ) : (
+        <Login 
+          setIsLoggedIn={setIsLoggedIn} 
+          setCurrentUser={setCurrentUser} 
+        />
+      )}
+      
+      <Footer />
     </>
   )
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const API_BASE_URL = 'https://cookhub-production.up.railway.app';
 
-function Login({ setIsLoggedIn }) {
+function Login({ setIsLoggedIn, setCurrentUser }) {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -46,23 +46,28 @@ function Login({ setIsLoggedIn }) {
 
       const data = await response.json();
 
+      console.log('API Response:', response.status, data);
+
       if (response.ok && data.success) {
-        // Store user data in memory (React state management)
-        // You might want to lift this state up to App.jsx or use Context
+        console.log('Login successful, user data:', data.user);
+        
+        // Create user data object
         const userData = {
           userId: data.user.user_id,
           username: data.user.username,
           email: data.user.email
         };
         
-        // Store in parent component state
-        setIsLoggedIn(true);
+        console.log('Setting user data:', userData);
         
-        // You can also store userData in App.jsx state if needed
-        // For now, storing in window object for demo (replace with proper state management)
-        window.currentUser = userData;
+        // IMPORTANT: Set user data FIRST, then set logged in status
+        setCurrentUser(userData);
         
-        alert(`Login successful! Welcome, ${userData.username}!`);
+        // Small delay to ensure state updates properly
+        setTimeout(() => {
+          setIsLoggedIn(true);
+          console.log('User logged in');
+        }, 100);
         
         // Clear form
         setFormData({
@@ -87,7 +92,14 @@ function Login({ setIsLoggedIn }) {
         <h2>Login to CookHub</h2>
         <form onSubmit={handleSubmit}>
           {error && (
-            <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+            <div className="error-message" style={{ 
+              color: 'white',
+              backgroundColor: '#d32f2f',
+              padding: '12px',
+              borderRadius: '6px',
+              marginBottom: '15px',
+              textAlign: 'center'
+            }}>
               {error}
             </div>
           )}
@@ -126,6 +138,15 @@ function Login({ setIsLoggedIn }) {
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        
+        <div style={{ marginTop: '20px', textAlign: 'center', color: '#666' }}>
+          <p>Don't have an account? <a href="#" style={{ color: '#1a3c34', fontWeight: 'bold' }}>Sign Up</a></p>
+          <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
+            <strong>Test Account:</strong><br />
+            Username: testuser<br />
+            Password: testpass123
+          </p>
+        </div>
       </div>
     </div>
   );
