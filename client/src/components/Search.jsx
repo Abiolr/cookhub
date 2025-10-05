@@ -55,6 +55,11 @@ export default function Search({ currentUser, onViewRecipe }) {
         console.log('Search results:', data);
         // ✅ FIX: Actually set the recipes state
         setRecipes(data);
+        
+        // ✅ NEW: Show error if no recipes found
+        if (data.length === 0) {
+          setError('No recipes found with those ingredients. Try different ingredients!');
+        }
       }
     } catch (err) {
       console.error('Search error:', err);
@@ -145,7 +150,7 @@ export default function Search({ currentUser, onViewRecipe }) {
 
       {recipes.length > 0 && (
         <div className="recipe-results">
-          <h2>Top {recipes.length} Results</h2>
+          <h2>Here's {recipes.length} results:</h2>
           <div className="recipes-grid">
             {recipes.map((recipe) => (
               <div

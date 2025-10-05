@@ -63,12 +63,11 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
             </>
           )}
 
-          {/* 🏠 About (always visible, returns home) */}
           <Link
             to="/"
             className={`header-button ${isActive("/") ? "active" : ""}`}
           >
-            About
+            Home
           </Link>
         </div>
       </div>

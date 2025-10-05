@@ -116,7 +116,6 @@ function Dashboard({ currentUser, onViewRecipe }) {
               Find Recipes
             </button>
           </div>
-          <div className="action-icon">👨‍🍳</div>
         </div>
 
         <div className="action-card ai-feature-card">
@@ -127,7 +126,6 @@ function Dashboard({ currentUser, onViewRecipe }) {
               Try AI Feature
             </button>
           </div>
-          <div className="action-icon">🤖</div>
         </div>
       </section>
 
