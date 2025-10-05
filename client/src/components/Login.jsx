@@ -83,13 +83,34 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2>Login to CookHub</h2>
-        <form onSubmit={handleSubmit}>
-          {error && (
-            <div className="error-message">
-              {error}
+    <div className="auth-section">
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 className="auth-title">Login to CookHub</h2>
+          <p className="auth-subtitle">Welcome back! Please enter your details.</p>
+          
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+
+            <div className="form-group">
+              <label htmlFor="username" className="form-label">
+                Username:
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                className="form-input"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter your username"
+                disabled={isLoading}
+                required
+              />
             </div>
 
             <div className="form-group">
@@ -112,7 +133,6 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
             <div className="form-options">
               <label className="checkbox-label">
                 <input type="checkbox" name="remember" />
-             
                 Remember me
               </label>
               <a href="#" className="forgot-link">
@@ -133,34 +153,19 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
             <span>Don't have an account?</span>
           </div>
 
-          <a href="#" className="auth-alt-link">
-            Create account
-          </a>
-          
           <button 
-            type="submit" 
-            className="login-button"
+            className="auth-alt-link"
+            onClick={onNavigateToRegister}
             disabled={isLoading}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            Create account
           </button>
-        </form>
-        
-        <div className="login-footer">
-          <p>Don't have an account? 
-            <span 
-              className="register-link" 
-              onClick={onNavigateToRegister}
-              style={{cursor: 'pointer', color: '#1a3c34', fontWeight: 'bold', marginLeft: '5px'}}
-            >
-              Sign Up
-            </span>
-          </p>
-          <p className="test-account">
-            <strong>Test Account:</strong><br />
-            Username: testuser<br />
-            Password: testpass123
-          </p>
+          
+          <div className="test-account">
+            <p><strong>Test Account:</strong></p>
+            <p>Username: testuser</p>
+            <p>Password: testpass123</p>
+          </div>
         </div>
       </div>
     </div>
