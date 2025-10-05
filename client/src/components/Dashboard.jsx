@@ -3,13 +3,15 @@ import '../styles/Dashboard.css';
 
 const API_BASE_URL = 'https://cookhub-production.up.railway.app';
 
-function Dashboard({ currentUser }) {
+function Dashboard({ currentUser, onViewRecipe }) {
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     console.log('Dashboard mounted, currentUser:', currentUser);
+    console.log('Dashboard onViewRecipe prop:', onViewRecipe);
+    
     if (currentUser && currentUser.userId) {
       console.log('Fetching recipes for user:', currentUser.userId);
       fetchUserRecipes();
@@ -62,29 +64,16 @@ function Dashboard({ currentUser }) {
   };
 
   const handleViewRecipe = (recipe) => {
-    // FIXED: Ingredients and instructions are already parsed in the backend
-    let ingredients = [];
-    let instructions = [];
+    console.log('=== VIEW RECIPE CLICKED ===');
+    console.log('Recipe data:', recipe);
+    console.log('onViewRecipe function:', onViewRecipe);
     
-    try {
-      // The backend already parses these from JSON, so no need to parse again
-      ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
-      instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
-    } catch (e) {
-      console.error('Error parsing recipe data:', e);
+    if (onViewRecipe && typeof onViewRecipe === 'function') {
+      console.log('Calling onViewRecipe...');
+      onViewRecipe(recipe);
+    } else {
+      console.error('onViewRecipe is not a function or is undefined');
     }
-
-    const recipeDetails = `
-Recipe: ${recipe.title}
-
-Ingredients:
-${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
-
-Instructions:
-${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
-    `.trim();
-
-    alert(recipeDetails);
   };
 
   if (!currentUser) {
@@ -161,7 +150,7 @@ ${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
         ) : (
           <div className="recipes-grid">
             {savedRecipes.map((recipe, index) => {
-              // FIXED: Use the data structure returned by the backend
+              // Use the data structure returned by the backend
               const ingredientCount = Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0;
               const stepCount = Array.isArray(recipe.instructions) ? recipe.instructions.length : 0;
 
@@ -186,7 +175,7 @@ ${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
                         className="recipe-btn view-btn"
                         onClick={() => handleViewRecipe(recipe)}
                       >
-                        View
+                        View Recipe
                       </button>
                     </div>
                   </div>
