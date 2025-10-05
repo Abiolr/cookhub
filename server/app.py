@@ -239,24 +239,43 @@ def login_user():
             "message": "Internal server error"
         }), 500
 
+# app.py (Corrected /save_recipe endpoint)
+
 @app.route('/save_recipe', methods=['POST'])
 def save_recipe():
-    """Save a recipe (identified by its Spoonacular recipe ID)."""
+    """Save a recipe (identified by its Spoonacular recipe ID) for a user."""
     data = request.get_json()
-    required = ['id', 'title', 'ingredients', 'steps', 'image']
+    
+    # 1. ADD 'user_id' to required fields for validation
+    required = ['user_id', 'id', 'title', 'ingredients', 'steps', 'image']
     for field in required:
         if field not in data:
             return jsonify({"success": False, "message": f"Missing field: {field}"}), 400
 
+    # 2. Pass ALL SIX arguments to db.save_recipe in the correct order:
+    # (user_id, recipe_id, title, ingredients, instructions, image_url)
     success, message = db.save_recipe(
-        data['id'],           # Spoonacular recipe ID
-        data['title'],
-        data['ingredients'],
-        data['steps'],
-        data['image']
+        user_id=data['user_id'],          # Correctly mapped to user_id
+        recipe_id=data['id'],             # Correctly mapped to recipe_id
+        title=data['title'],
+        ingredients=data['ingredients'],
+        instructions=data['steps'],        # 'steps' maps to 'instructions' in the DB
+        image_url=data['image']           # 'image' maps to 'image_url' in the DB
     )
+    
     status = 201 if success else 400
     return jsonify({"success": success, "message": message}), status
+
+
+@app.route('/user/<int:user_id>/recipes', methods=['GET'])
+def get_user_recipes(user_id):
+    """Return all saved recipes for a specific user."""
+    success, result = db.get_recipes_by_user(user_id)
+    if success:
+        return jsonify({"success": True, "recipes": result}), 200
+    else:
+        return jsonify({"success": False, "message": result}), 500
+
 
 if __name__ == '__main__':
     print("Starting Flask server...")
