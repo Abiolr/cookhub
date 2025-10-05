@@ -3,10 +3,14 @@ import Header from "./components/Header.jsx";
 import Homepage from "./components/Homepage.jsx";
 import Login from "./components/Login.jsx";
 import Registration from "./components/Registration.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import View from "./components/View.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentView, setCurrentView] = useState('home');
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   // Debug: Log state changes
   useEffect(() => {
@@ -14,9 +18,19 @@ function App() {
       "App State - isLoggedIn:",
       isLoggedIn,
       "currentUser:",
-      currentUser
+      currentUser,
+      "currentView:",
+      currentView
     );
-  }, [isLoggedIn, currentUser]);
+  }, [isLoggedIn, currentUser, currentView]);
+
+  // Handle successful login/registration
+  const handleAuthSuccess = (userData) => {
+    console.log('Authentication successful, user data:', userData);
+    setCurrentUser(userData);
+    setIsLoggedIn(true);
+    setCurrentView('dashboard');
+  };
 
   // Handle logout properly
   const handleLogout = () => {
@@ -78,14 +92,14 @@ function App() {
           <Login 
             setIsLoggedIn={setIsLoggedIn} 
             setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={() => setCurrentView('register')}
+            onNavigateToRegister={navigateToRegister}
           />
         );
       case 'register':
         return (
           <Registration 
             onRegistrationSuccess={handleAuthSuccess}
-            onNavigateToLogin={() => setCurrentView('login')}
+            onNavigateToLogin={navigateToLogin}
           />
         );
       case 'dashboard':
@@ -98,7 +112,7 @@ function App() {
           <Login 
             setIsLoggedIn={setIsLoggedIn} 
             setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={() => setCurrentView('register')}
+            onNavigateToRegister={navigateToRegister}
           />
         );
       case 'view':
@@ -112,7 +126,7 @@ function App() {
           <Login 
             setIsLoggedIn={setIsLoggedIn} 
             setCurrentUser={handleAuthSuccess}
-            onNavigateToRegister={() => setCurrentView('register')}
+            onNavigateToRegister={navigateToRegister}
           />
         );
       default:
@@ -122,17 +136,16 @@ function App() {
 
   return (
     <>
-      <Header
+      <Header 
         isLoggedIn={isLoggedIn}
-        currentUser={currentUser}
+        currentView={currentView}
         onLogout={handleLogout}
+        onNavigateToHome={navigateToHome}
+        onNavigateToLogin={navigateToLogin}
+        onNavigateToRegister={navigateToRegister}
+        onNavigateToDashboard={navigateToDashboard}
       />
-
-      {!isLoggedIn ? (
-        <Login setIsLoggedIn={setIsLoggedIn} setCurrentUser={setCurrentUser} />
-      ) : (
-        <Homepage currentUser={currentUser} />
-      )}
+      {renderCurrentView()}
     </>
   );
 }
