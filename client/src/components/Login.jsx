@@ -1,32 +1,31 @@
-import { useState } from 'react';
+import { useState } from "react";
+import "../styles/Login.css";
 
-const API_BASE_URL = 'https://cookhub-production.up.railway.app';
+const API_BASE_URL = "https://cookhub-production.up.railway.app";
 
 function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    // Clear error when user starts typing
-    if (error) setError('');
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    // Validate inputs
     if (!formData.username || !formData.password) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
 
@@ -34,19 +33,19 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
 
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: formData.username,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
 
-      console.log('API Response:', response.status, data);
+      console.log("API Response:", response.status, data);
 
       if (response.ok && data.success) {
         console.log('Login successful, user data:', data.user);
@@ -55,7 +54,7 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
         const userData = {
           userId: data.user.id,
           username: data.user.username,
-          email: data.user.email
+          email: data.user.email,
         };
         
         console.log('Setting user data:', userData);
@@ -67,16 +66,17 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
         
         // Clear form
         setFormData({
-          username: '',
-          password: ''
+          username: "",
+          password: "",
         });
       } else {
-        // Handle login failure
-        setError(data.message || 'Login failed. Please check your credentials.');
+        setError(
+          data.message || "Login failed. Please check your credentials."
+        );
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Network error. Please try again later.');
+      console.error("Login error:", err);
+      setError("Network error. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -91,33 +91,51 @@ function Login({ setIsLoggedIn, setCurrentUser, onNavigateToRegister }) {
             <div className="error-message">
               {error}
             </div>
-          )}
-          
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your username"
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
+                Password:
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="form-input"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-options">
+              <label className="checkbox-label">
+                <input type="checkbox" name="remember" />
+             
+                Remember me
+              </label>
+              <a href="#" className="forgot-link">
+                Forgot password?
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              className="auth-submit-btn"
               disabled={isLoading}
-            />
+            >
+              {isLoading ? "Logging in..." : "Enter"}
+            </button>
+          </form>
+
+          <div className="auth-divider">
+            <span>Don't have an account?</span>
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              disabled={isLoading}
-            />
-          </div>
+
+          <a href="#" className="auth-alt-link">
+            Create account
+          </a>
           
           <button 
             type="submit" 
