@@ -23,22 +23,26 @@ function Dashboard({ currentUser }) {
     setIsLoading(true);
     setError('');
 
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/user/${currentUser.userId}/recipes`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
-      );
+    const url = `${API_BASE_URL}/user/${currentUser.userId}/recipes`;
+    console.log('Fetching recipes from:', url);
 
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok && data.success) {
+        console.log('Recipes loaded:', data.recipes);
         setSavedRecipes(data.recipes || []);
       } else {
+        console.error('Failed to load recipes:', data.message);
         setError(data.message || 'Failed to load recipes');
       }
     } catch (err) {
@@ -58,13 +62,14 @@ function Dashboard({ currentUser }) {
   };
 
   const handleViewRecipe = (recipe) => {
-    // Parse the ingredients and instructions
+    // FIXED: Ingredients and instructions are already parsed in the backend
     let ingredients = [];
     let instructions = [];
     
     try {
-      ingredients = recipe.ingredients ? JSON.parse(recipe.ingredients) : [];
-      instructions = recipe.instructions ? JSON.parse(recipe.instructions) : [];
+      // The backend already parses these from JSON, so no need to parse again
+      ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+      instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
     } catch (e) {
       console.error('Error parsing recipe data:', e);
     }
@@ -133,6 +138,9 @@ ${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
       <section className="recipes-section saved-recipes">
         <div className="section-header">
           <h2>My Saved Recipes</h2>
+          <button onClick={fetchUserRecipes} className="refresh-button">
+            Refresh
+          </button>
         </div>
 
         {error && (
@@ -152,23 +160,20 @@ ${instructions.map((step, i) => `${i + 1}. ${step}`).join('\n')}
           </div>
         ) : (
           <div className="recipes-grid">
-            {savedRecipes.map((recipe) => {
-              let ingredientCount = 0;
-              let stepCount = 0;
-              
-              try {
-                ingredientCount = recipe.ingredients ? JSON.parse(recipe.ingredients).length : 0;
-                stepCount = recipe.instructions ? JSON.parse(recipe.instructions).length : 0;
-              } catch (e) {
-                console.error('Error parsing recipe counts:', e);
-              }
+            {savedRecipes.map((recipe, index) => {
+              // FIXED: Use the data structure returned by the backend
+              const ingredientCount = Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0;
+              const stepCount = Array.isArray(recipe.instructions) ? recipe.instructions.length : 0;
 
               return (
-                <div key={recipe.saved_recipe_id} className="recipe-card">
+                <div key={recipe.recipe_id || index} className="recipe-card">
                   <div className="recipe-image">
                     <img 
                       src={recipe.image_url || 'https://via.placeholder.com/200x150/1a3c34/ffffff?text=Recipe'} 
                       alt={recipe.title}
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/200x150/1a3c34/ffffff?text=Recipe';
+                      }}
                     />
                   </div>
                   <div className="recipe-info">

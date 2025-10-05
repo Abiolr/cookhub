@@ -51,9 +51,9 @@ function Login({ setIsLoggedIn, setCurrentUser }) {
       if (response.ok && data.success) {
         console.log('Login successful, user data:', data.user);
         
-        // Create user data object
+        // FIXED: Use the correct field names from the API response
         const userData = {
-          userId: data.user.user_id,
+          userId: data.user.id,  // Changed from user_id to id
           username: data.user.username,
           email: data.user.email
         };
