@@ -241,14 +241,15 @@ def login_user():
 
 @app.route('/save_recipe', methods=['POST'])
 def save_recipe():
+    """Save a recipe (identified by its Spoonacular recipe ID)."""
     data = request.get_json()
-    required = ['user_id', 'title', 'ingredients', 'steps', 'image']
+    required = ['id', 'title', 'ingredients', 'steps', 'image']
     for field in required:
         if field not in data:
             return jsonify({"success": False, "message": f"Missing field: {field}"}), 400
 
     success, message = db.save_recipe(
-        data['user_id'],
+        data['id'],           # Spoonacular recipe ID
         data['title'],
         data['ingredients'],
         data['steps'],
@@ -256,7 +257,6 @@ def save_recipe():
     )
     status = 201 if success else 400
     return jsonify({"success": success, "message": message}), status
-
 
 if __name__ == '__main__':
     print("Starting Flask server...")

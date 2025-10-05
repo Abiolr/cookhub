@@ -102,10 +102,8 @@ class Database:
             cursor.close()
             connection.close()
 
-
-
     def create_recipes_table(self):
-        """(Dev only) Drop & recreate the Recipes table."""
+        """(Dev only) Drop & recreate the Recipes table (linked by Spoonacular recipe ID)."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
 
@@ -113,13 +111,12 @@ class Database:
         create_query = """
         CREATE TABLE Recipes (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            recipe_id INT NOT NULL UNIQUE,  -- Spoonacular recipe ID
             title VARCHAR(255) NOT NULL,
             image_url VARCHAR(255),
             ingredients JSON NOT NULL,
             instructions JSON NOT NULL,
-            user_id INT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """
 
@@ -127,12 +124,13 @@ class Database:
             cursor.execute(drop_query)
             cursor.execute(create_query)
             connection.commit()
-            print("✅ Recipes table recreated successfully!")
+            print("✅ Recipes table recreated successfully (linked by recipe_id)!")
         except mysql.connector.Error as e:
             print(f"❌ Error creating Recipes table: {e}")
         finally:
             cursor.close()
             connection.close()
+
 
     def create_database_tables(self):
         """Create all database tables."""
@@ -251,17 +249,22 @@ class Database:
             cursor.close()
             connection.close()
             
-    def save_recipe(self, user_id, title, ingredients, instructions, image_url):
-        """Save a recipe to the Recipes table."""
+    def save_recipe(self, recipe_id, title, ingredients, instructions, image_url):
+        """Save a recipe using its Spoonacular recipe ID."""
         connection = self.get_db_connection()
         cursor = connection.cursor()
         try:
             query = """
-            INSERT INTO Recipes (user_id, title, image_url, ingredients, instructions, created_at)
+            INSERT INTO Recipes (recipe_id, title, image_url, ingredients, instructions, created_at)
             VALUES (%s, %s, %s, %s, %s, NOW())
+            ON DUPLICATE KEY UPDATE
+                title = VALUES(title),
+                image_url = VALUES(image_url),
+                ingredients = VALUES(ingredients),
+                instructions = VALUES(instructions)
             """
             cursor.execute(query, (
-                user_id,
+                recipe_id,
                 title,
                 image_url,
                 json.dumps(ingredients),
@@ -276,7 +279,6 @@ class Database:
         finally:
             cursor.close()
             connection.close()
-
 
 if __name__ == "__main__":
     db = Database()
