@@ -5,6 +5,12 @@ import Registration from './components/Registration.jsx'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('App State - isLoggedIn:', isLoggedIn, 'currentUser:', currentUser);
+  }, [isLoggedIn, currentUser]);
 
   return (
     <>
