@@ -10,6 +10,7 @@ function App() {
     <>
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Homepage />
+      <Footer />
     </>
   )
 }
