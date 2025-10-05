@@ -1,24 +1,68 @@
-import logoUrl from '../assets/CookHub_Logo.png'
+function Header({ isLoggedIn, currentView, onLogout, onNavigateToHome, onNavigateToLogin, onNavigateToRegister, onNavigateToDashboard }) {
+    const logoUrl = "/CookHub_Logo.png";
 
-function Header({isLoggedIn, setIsLoggedIn}) {
-    
-    return (<header className="header">{isLoggedIn  ? (
-    <div>
-    <img src={logoUrl} className="header-logo" alt="CookHub Logo"/>
-    <button className="header-button-one">Account</button>
-    <button className="header-button-two" onClick={handleLogout}>Logout</button>
-    <button className="header-search-button">Search</button>
-    <button className="header-about-button">About</button>
-    </div>
-     ) : (
-    <div>
-    <img src={logoUrl} className="header-logo" alt="CookHub Logo"/>
-    <button className="header-button-one" onClick={() => setIsLoggedIn(true)}>Login</button>
-    <button className="header-button-two">Sign Up</button>
-    </div>
-    )}
-    </header>)
-
+    return (
+        <header className="header">
+            <div className="header-content">
+                {/* Logo - always clickable to go home */}
+                <img 
+                    src={logoUrl} 
+                    className="header-logo" 
+                    alt="CookHub Logo"
+                    onClick={onNavigateToHome}
+                    style={{cursor: 'pointer'}}
+                />
+                
+                {/* Navigation buttons */}
+                <div className="header-nav">
+                    {isLoggedIn ? (
+                        // Logged in state
+                        <>
+                            <button 
+                                className={`header-button ${currentView === 'dashboard' ? 'active' : ''}`}
+                                onClick={onNavigateToDashboard}
+                            >
+                                Dashboard
+                            </button>
+                            <button className="header-button">
+                                Account
+                            </button>
+                            <button 
+                                className="header-button logout-button"
+                                onClick={onLogout}
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        // Not logged in state
+                        <>
+                            <button 
+                                className={`header-button ${currentView === 'login' ? 'active' : ''}`}
+                                onClick={onNavigateToLogin}
+                            >
+                                Login
+                            </button>
+                            <button 
+                                className={`header-button ${currentView === 'register' ? 'active' : ''}`}
+                                onClick={onNavigateToRegister}
+                            >
+                                Sign Up
+                            </button>
+                        </>
+                    )}
+                    
+                    {/* Always visible buttons */}
+                    <button className="header-button">
+                        Search
+                    </button>
+                    <button className="header-button">
+                        About
+                    </button>
+                </div>
+            </div>
+        </header>
+    )
 }
 
 export default Header;
