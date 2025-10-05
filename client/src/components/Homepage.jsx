@@ -43,7 +43,7 @@ const Homepage = () => {
                         console.log("Navigating to Login/Registration Page...");
                     }}
                 >
-                    Get Started / Log In
+                    Discover Recipes Now!
                 </button>
             </div>
         </div>
