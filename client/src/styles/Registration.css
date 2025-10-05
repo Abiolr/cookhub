@@ -1,0 +1,34 @@
+.registration-input{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.registration-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-match-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+  }
+  
+  .indicator-circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: gray;
+    transition: background-color 0.3s ease;
+  }
+  
+  .indicator-message {
+    font-size: 14px;
+    color: #333;
+  }

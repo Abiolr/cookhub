@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
-import Header from './components/Header'
-import Login from './components/Login'
-import Dashboard from './components/Dashboard'
-import Footer from './components/Footer'
+import { useState } from 'react'
+import Header from './components/Header.jsx'
+import Homepage from './components/Homepage.jsx'
+import Registration from './components/Registration.jsx'  
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -15,18 +14,8 @@ function App() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      
-      {isLoggedIn && currentUser ? (
-        <Dashboard currentUser={currentUser} />
-      ) : (
-        <Login 
-          setIsLoggedIn={setIsLoggedIn} 
-          setCurrentUser={setCurrentUser} 
-        />
-      )}
-      
-      <Footer />
+      <Header/>
+      <Registration/>
     </>
   )
 }
