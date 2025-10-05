@@ -1,13 +1,12 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
 import os
 import requests
 from dotenv import load_dotenv
 from database import Database
-import os
+import random
+import requests
 
-# Load environment variables (for API keys, DB creds, etc.)
 load_dotenv()
 
 app = Flask(__name__)
@@ -33,9 +32,6 @@ def home():
 # -----------------------------------------------
 # Search Recipes by Ingredients
 # -----------------------------------------------
-import random
-import requests
-from flask import request, jsonify
 
 @app.route('/search_recipes', methods=['POST'])
 def search_recipes():
@@ -250,8 +246,6 @@ def login_user():
             "message": "Internal server error"
         }), 500
 
-# app.py (Corrected /save_recipe endpoint)
-
 @app.route('/save_recipe', methods=['POST'])
 def save_recipe():
     """Save a recipe (identified by its Spoonacular recipe ID) for a user."""
@@ -277,7 +271,6 @@ def save_recipe():
     status = 201 if success else 400
     return jsonify({"success": success, "message": message}), status
 
-
 @app.route('/user/<int:user_id>/recipes', methods=['GET'])
 def get_user_recipes(user_id):
     """Return all saved recipes for a specific user."""
@@ -286,7 +279,6 @@ def get_user_recipes(user_id):
         return jsonify({"success": True, "recipes": result}), 200
     else:
         return jsonify({"success": False, "message": result}), 500
-
 
 if __name__ == '__main__':
     print("Starting Flask server...")

@@ -1,0 +1,235 @@
+/* =============================================
+   LOGIN COMPONENT STYLES - Matching HTML version
+============================================= */
+
+/* Auth Section */
+.auth-section {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f8fdfb;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(26, 60, 52, 0.1);
+  text-align: center;
+}
+
+.auth-title {
+  color: #3f4e2b;
+  font-size: 2.2em;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.auth-subtitle {
+  color: #3f4e2b;
+  margin-bottom: 30px;
+  font-size: 1.1em;
+}
+
+/* Auth Form */
+.auth-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  color: #3f4e2b;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 1em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3f4e2b;
+  box-shadow: 0 0 0 3px rgba(26, 60, 52, 0.1);
+}
+
+.form-input::placeholder {
+  color: #a0a0a0;
+}
+
+.form-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Form Options */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  color: #3f4e2b;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.checkbox-label input {
+  margin-right: 8px;
+}
+
+
+.checkbox-label input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 1px;
+  color:#3f4e2b;
+  font-weight: bold;
+}
+
+.forgot-link {
+  color: #3f4e2b;
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.3s ease;
+}
+
+.forgot-link:hover {
+  color: #3f4e2b;
+  text-decoration: underline;
+}
+
+/* Auth Buttons */
+.auth-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color:#3f4e2b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background-color: #3f4e2b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 60, 52, 0.3);
+}
+
+.auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Auth Divider */
+.auth-divider {
+  margin: 25px 0;
+  position: relative;
+  text-align: center;
+  color: #3f4e2b;
+  font-size: 0.9em;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+.auth-divider span {
+  background: white;
+  padding: 0 15px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Alternative Auth Link */
+.auth-alt-link {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: white;
+  color: #3f4e2b;
+  border: 2px solid #3f4e2b;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.auth-alt-link:hover:not(:disabled) {
+  background-color: #3f4e2b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(63, 78, 43, 0.3);
+}
+
+.auth-alt-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-alt-link:hover {
+  background-color:#3f4e2b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 60, 52, 0.3);
+}
+
+/* Error Message */
+.error-message {
+  color: white;
+  background-color: #d32f2f;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 500;
+}
+
