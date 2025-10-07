@@ -21,7 +21,7 @@ Turn random ingredients into culinary masterpieces.
 
 CookHub is a full-stack web application that helps users discover recipes based on the ingredients they have on hand. By integrating the Spoonacular API, we provide personalized recipe recommendations that minimize food waste and inspire creativity in the kitchen.
 
-**Live Demo:** [https://cookhub-production.up.railway.app](https://cookhub-production.up.railway.app)
+**Live Demo:** [https://cookhub-psi.vercel.app](https://cookhub-psi.vercel.app)
 
 ---
 
